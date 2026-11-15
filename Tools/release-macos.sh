@@ -28,7 +28,9 @@ xcodebuild -project NWCViewer.xcodeproj -scheme NWCViewer \
 
 mkdir -p dist
 RELEASE_DIR="$(mktemp -d "$ROOT/dist/NWCViewer-XXXXXX")"
-APP="$RELEASE_DIR/NWC Viewer.app"
+SIGNING_DIR="$(mktemp -d "${TMPDIR:-/tmp}/NWCViewer-signing.XXXXXX")"
+trap 'rm -rf "$SIGNING_DIR"' EXIT
+APP="$SIGNING_DIR/NWC Viewer.app"
 ditto 'build/ReleaseDerivedData/Build/Products/Release/NWC Viewer.app' "$APP"
 HELPER="$APP/Contents/Helpers/nwc2xml"
 lipo "$APP/Contents/MacOS/NWC Viewer" -verify_arch arm64
@@ -60,4 +62,5 @@ codesign --verify --deep --strict --verbose=2 "$APP"
 spctl --assess --type execute --verbose=2 "$APP"
 rm "$UPLOAD"
 
+ditto --norsrc --noextattr "$APP" "$RELEASE_DIR/NWC Viewer.app"
 RELEASE_DIR="$RELEASE_DIR" bash Tools/package-release.sh
