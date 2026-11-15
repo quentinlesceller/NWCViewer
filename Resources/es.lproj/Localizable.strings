@@ -12,7 +12,7 @@
 "Open a NoteWorthy Composer score to read, print, or save as PDF." = "Abre una partitura de NoteWorthy Composer para leerla, imprimirla o guardarla como PDF.";
 "Open NWC File…" = "Abrir archivo NWC…";
 "Or drop an .nwc file here" = "O arrastra un archivo .nwc aquí";
-"Works offline · Supports NWC 1.30–2.1" = "Funciona sin conexión · Compatible con NWC 1.30–2.1";
+"Works offline · Supports NWC 1.30–2.1 / 2.75" = "Funciona sin conexión · Compatible con NWC 1.30–2.1 / 2.75";
 "Zoom out" = "Alejar";
 "Zoom in" = "Acercar";
 "Reset to actual size" = "Restablecer el tamaño real";
@@ -31,12 +31,12 @@
 "Unable to render a PDF page." = "No se puede generar una página del PDF.";
 "Unable to finish the PDF." = "No se puede finalizar el PDF.";
 "The converter returned an unreadable score." = "El conversor ha generado una partitura ilegible.";
-"This file could not be converted to a readable score. It may be damaged or use an unsupported NWC version. Supported versions: 1.30–2.1." = "No se pudo convertir este archivo en una partitura legible. Puede estar dañado o usar una versión de NWC no compatible. Versiones compatibles: 1.30–2.1.";
+"This file could not be converted to a readable score. It may be damaged or use an unsupported NWC version. Supported versions: 1.30–2.1 / 2.75." = "No se pudo convertir este archivo en una partitura legible. Puede estar dañado o usar una versión de NWC no compatible. Versiones compatibles: 1.30–2.1 / 2.75.";
 "Choose a non-empty NWC file smaller than 16 MB." = "Elige un archivo NWC que no esté vacío y que ocupe menos de 16 MB.";
 "This is not a binary NoteWorthy Composer file. Choose the original .nwc file; changing a file’s extension does not convert it." = "Este no es un archivo binario de NoteWorthy Composer. Elige el archivo .nwc original; cambiar su extensión no lo convierte.";
 "The converter is missing. Reinstall NWC Viewer or rebuild it using the setup instructions." = "Falta el conversor. Vuelve a instalar NWC Viewer o compílalo siguiendo las instrucciones de instalación.";
 "This file took too long to convert. It may be damaged or unsupported." = "La conversión de este archivo ha tardado demasiado. Puede estar dañado o no ser compatible.";
-"This file could not be opened. It may be damaged or use an unsupported NWC version. Supported versions: 1.30–2.1." = "No se pudo abrir este archivo. Puede estar dañado o usar una versión de NWC no compatible. Versiones compatibles: 1.30–2.1.";
+"This file could not be opened. It may be damaged or use an unsupported NWC version. Supported versions: 1.30–2.1 / 2.75." = "No se pudo abrir este archivo. Puede estar dañado o usar una versión de NWC no compatible. Versiones compatibles: 1.30–2.1 / 2.75.";
 "Sheet music" = "Partitura";
 "NWC Viewer" = "NWC Viewer";
 "Zoom" = "Zoom";

@@ -27,6 +27,32 @@ class ConverterTests(unittest.TestCase):
                 self.assertEqual(score.read_bytes(), original)
                 self.assertFalse(fixture.with_suffix('.xml').exists())
 
+    def test_modern_notation_and_measure_alignment(self):
+        with tempfile.TemporaryDirectory() as d:
+            file = Path(d)/'modern.nwc'
+            file.write_bytes((ROOT/'Tests/Fixtures/Modern275.nwc').read_bytes())
+            subprocess.run([str(HELPER),str(file)],check=True,capture_output=True)
+            xml = ET.parse(file.with_suffix('.xml'))
+            measures = xml.findall('.//part/measure')
+            self.assertEqual(len(measures),5)
+            self.assertEqual([sum(int(n.findtext('duration','0')) for n in m.findall('note') if n.find('chord') is None) for m in measures], [1920,720,720,720,720])
+            self.assertEqual(measures[1].findtext('attributes/time/beats'),'3')
+            self.assertEqual(measures[0].find('note/accidental').attrib,{'parentheses':'yes'})
+            self.assertEqual([n.findtext('pitch/alter') for n in measures[0].findall('note')],['1','1'])
+            self.assertEqual(measures[0].findall('note')[1].find('tie').attrib['type'],'stop')
+            self.assertEqual(len(xml.findall('.//time-modification')),3)
+            self.assertEqual(xml.findtext('.//lyric/text'),'Bon')
+
+    def test_modern_unsupported_record_fails_without_partial_output(self):
+        source=zlib.decompress((ROOT/'Tests/Fixtures/Modern275.nwc').read_bytes()[6:])
+        for payload in [source.replace(b'|Note|Dur:Half', b'|RestChord|Dur:Half',1),source.replace(b'!NoteWorthyComposer-End',b'')]:
+            with tempfile.TemporaryDirectory() as d:
+                file=Path(d)/'invalid.nwc'
+                file.write_bytes(b'[NWZ]\0'+zlib.compress(payload))
+                result=subprocess.run([str(HELPER),str(file)],capture_output=True)
+                self.assertNotEqual(result.returncode,0)
+                self.assertFalse(file.with_suffix('.xml').exists())
+
     def test_bad_files_return_failure(self):
         for bad in [b'', b'[NWZ]\0broken', b'!NoteWorthyComposer(2.75)\n', b'not a score']:
             with self.subTest(data=bad), tempfile.TemporaryDirectory() as d:

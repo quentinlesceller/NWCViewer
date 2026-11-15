@@ -5,9 +5,13 @@
 #include "nwcfile.h"
 #include "XMLSaver.h"
 #include "nwc2xml-version.h"
+#include "../../Converter/ModernNWC.h"
 
 DWORD ConvertNWC2MusicXML(const wxString& strNWC, bool bGenerateLog)
 {
+    std::string output(strNWC.c_str()); output.replace(output.size()-3,3,"xml");
+    int modern = ConvertModernNWC(strNWC.c_str(), output.c_str());
+    if (modern >= 0) return modern == 0 ? ERROR_SUCCESS : ERROR_INVALID_DATA;
 	wxFile in;
 	if ( in.Open(strNWC) == FALSE )
 		return (DWORD)wxSysErrorCode();

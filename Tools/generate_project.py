@@ -21,6 +21,7 @@ def phase(key, isa, files, **kw):
 
 apps = [file(str(p.relative_to(ROOT)), 'sourcecode.swift') for p in sorted((ROOT/'App').glob('*.swift'))]
 cpp = [file('Vendor/nwc2xml/'+n+'.cpp','sourcecode.cpp.cpp') for n in ['nwc2xml','nwcfile','nwcobj','xmlsaver','xmlwriter','wxshim']]
+cpp.append(file('Converter/ModernNWC.cpp', 'sourcecode.cpp.cpp'))
 icon = file('Resources/AppIcon.icns', 'image.icns')
 web = file('Resources/Web', 'folder')
 licenses = file('Resources/Licenses', 'folder')

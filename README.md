@@ -4,7 +4,7 @@ A small native macOS app for opening **binary NoteWorthy Composer `.nwc` files**
 
 ## Download for Mac
 
-[Download NWC Viewer](https://github.com/quentinlesceller/NWCViewer/releases/download/v1.1/NWCViewer-1.1-macOS.zip)
+[Download NWC Viewer](https://github.com/quentinlesceller/NWCViewer/releases/download/v1.2/NWCViewer-1.2-macOS.zip)
 
 Requires macOS 13 or later; supports Intel and Apple silicon. Unzip the download,
 drag **NWC Viewer.app** into Applications, then open it. The release is Developer
@@ -68,7 +68,7 @@ The converter is [n9yty/nwc2xml](https://github.com/n9yty/nwc2xml/tree/47235bd77
 
 **Renaming `.nwc` to `.nwct`, `.nwctxt`, or `.xml` does not convert anything.** This app never does that. It copies the original bytes to an isolated temporary `score.nwc` and invokes the parser with a separate argument array. Text exports renamed to `.nwc` are rejected. Some other converters named `nwc2musicxml` primarily accept NWCTXT; they are not substitutes for this binary parser.
 
-Newer NWC versions (including 2.75) and unusual notation may be unsupported. The app rejects failed, malformed, or empty conversions with a readable message. If a newer file fails, use NoteWorthy Composer to export MusicXML, or save a compatible older binary version if your edition supports it; this viewer does not open MusicXML directly. Engraving, layout, lyrics, repeats and other details may differ from the original; check the score before performance or publication. Legacy byte encodings use upstream's UTF-8 / CP1252 fallback. There is no charset setting in this minimal interface.
+NWC 2.75 binary containers with embedded score text are also supported by the local C++ converter in `Converter/ModernNWC.cpp`. It handles notes, chords, rests, multi-measure rests, standard clefs and keys, time changes, accidentals, ties, slurs, triplets, lyrics and dynamics. Split-duration chords and other unimplemented musical records are rejected rather than silently omitted. Staff layout is regenerated and may differ substantially from the original. Other newer versions and unusual notation may be unsupported. The app rejects failed, malformed, or empty conversions with a readable message. If a newer file fails, use NoteWorthy Composer to export MusicXML, or save a compatible older binary version if your edition supports it; this viewer does not open MusicXML directly. Engraving, layout, lyrics, repeats and other details may differ from the original; check the score before performance or publication. Legacy byte encodings use upstream's UTF-8 / CP1252 fallback. There is no charset setting in this minimal interface.
 
 Input is limited to 16 MB; decompressed binary data and converted XML are limited to 32 MB. Conversion runs off the UI thread with a 20-second timeout. The helper is killed on timeout. Input is copied before conversion; outputs and helper temporary files stay in a private temporary directory and are removed on success/failure. An app crash or forced termination can leave temporary files for macOS to clean up. The original score and neighboring files are never intentionally changed. This is a legacy parser, not a hardened parser for hostile files.
 
@@ -95,7 +95,7 @@ Everything below is bundled or part of macOS. End users install **no additional 
 
 The OSMD bundle was obtained from `https://registry.npmjs.org/opensheetmusicdisplay/-/opensheetmusicdisplay-1.9.2.tgz`. Its upstream npm tarball omits the separate minifier license file named in its header, so this project supplies collected dependency license texts under that filename, plus OSMD's license and author list. `Tools/notice-packages.lock.json` records the packages used to collect those notices; it is **not** a lockfile claiming the precise internal dependency graph used for OSMD's upstream prebuilt bundle.
 
-Preserve all included notices when redistributing. The GPL converter's full corresponding source, its changes, and build instructions are included. When distributing app/helper binaries, supply this corresponding source alongside them under GPL v2; a link to upstream alone is insufficient. Third-party files retain their own notices/licenses. The included test scores come from the converter's GPL repository (`sample/`); `Uncompressed.nwc` is the decompressed `St._Stephen.nwc` fixture. Keep these notices with source distributions.
+Preserve all included notices when redistributing. The GPL converter's full corresponding source, its changes, and build instructions are included. When distributing app/helper binaries, supply this corresponding source alongside them under GPL v2; a link to upstream alone is insufficient. Third-party files retain their own notices/licenses. The included test scores come from the converter's GPL repository (`sample/`); `Uncompressed.nwc` is the decompressed `St._Stephen.nwc` fixture. `Modern275.nwc` is a synthetic regression score created for this project, with no user music included. Keep these notices with source distributions.
 
 ## Tests
 
@@ -105,7 +105,7 @@ On a Mac, run the hosted XCTest suite (including an actual WKWebView load of the
 Tools/test-macos.sh
 ```
 
-Tests cover compressed and uncompressed binary fixtures, preserving original bytes, filenames with Unicode and shell characters, renamed text rejection, truncated compressed data, unsupported versions, a missing helper, invalid MusicXML, timeout termination, local WebKit rendering and zoom. `Tools/ci/macos.yml` is an optional GitHub Actions workflow template. Copy it to `.github/workflows/macos.yml` using an account with workflow permission to enable CI.
+Tests cover NWC 2.75 timing changes, multi-measure rests, cautionary accidentals, ties and triplets, compressed and uncompressed binary fixtures, preserving original bytes, filenames with Unicode and shell characters, renamed text rejection, truncated compressed data, unsupported versions, a missing helper, invalid MusicXML, timeout termination, local WebKit rendering and zoom. `Tools/ci/macos.yml` is an optional GitHub Actions workflow template. Copy it to `.github/workflows/macos.yml` using an account with workflow permission to enable CI.
 
 The standalone converter tests also run on Linux with a C++11 compiler, `make`, Python 3, and zlib development headers (iconv is part of glibc). On macOS, zlib/iconv and the compiler come with Xcode:
 

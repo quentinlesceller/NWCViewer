@@ -57,7 +57,7 @@ struct ContentView: View {
                         Button("Open NWC File…", action: model.chooseFile)
                             .buttonStyle(.borderedProminent).controlSize(.large).keyboardShortcut(.defaultAction)
                         Text("Or drop an .nwc file here").foregroundStyle(.secondary)
-                        Text("Works offline · Supports NWC 1.30–2.1").font(.callout).foregroundStyle(.secondary).padding(.top, 12)
+                        Text("Works offline · Supports NWC 1.30–2.1 / 2.75").font(.callout).foregroundStyle(.secondary).padding(.top, 12)
                     }.padding(30).frame(maxWidth: .infinity, maxHeight: .infinity).background(.background)
                 }
                 if dropTarget { RoundedRectangle(cornerRadius: 12).stroke(Color.accentColor, lineWidth: 3).padding(8).allowsHitTesting(false) }

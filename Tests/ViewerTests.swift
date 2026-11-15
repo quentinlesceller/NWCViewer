@@ -34,7 +34,7 @@ final class ViewerTests: XCTestCase {
     }
 
     func testCompressedAndUncompressedBinaryScores() throws {
-        for name in ["Flee", "St._Stephen", "syllables", "Uncompressed"] {
+        for name in ["Flee", "St._Stephen", "syllables", "Uncompressed", "Modern275"] {
             let url = try fixture(name)
             let original = try Data(contentsOf: url)
             let xml = try Converter(executable: helper).convert(url)

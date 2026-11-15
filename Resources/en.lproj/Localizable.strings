@@ -12,7 +12,7 @@
 "Open a NoteWorthy Composer score to read, print, or save as PDF." = "Open a NoteWorthy Composer score to read, print, or save as PDF.";
 "Open NWC File…" = "Open NWC File…";
 "Or drop an .nwc file here" = "Or drop an .nwc file here";
-"Works offline · Supports NWC 1.30–2.1" = "Works offline · Supports NWC 1.30–2.1";
+"Works offline · Supports NWC 1.30–2.1 / 2.75" = "Works offline · Supports NWC 1.30–2.1 / 2.75";
 "Zoom out" = "Zoom out";
 "Zoom in" = "Zoom in";
 "Reset to actual size" = "Reset to actual size";
@@ -31,12 +31,12 @@
 "Unable to render a PDF page." = "Unable to render a PDF page.";
 "Unable to finish the PDF." = "Unable to finish the PDF.";
 "The converter returned an unreadable score." = "The converter returned an unreadable score.";
-"This file could not be converted to a readable score. It may be damaged or use an unsupported NWC version. Supported versions: 1.30–2.1." = "This file could not be converted to a readable score. It may be damaged or use an unsupported NWC version. Supported versions: 1.30–2.1.";
+"This file could not be converted to a readable score. It may be damaged or use an unsupported NWC version. Supported versions: 1.30–2.1 / 2.75." = "This file could not be converted to a readable score. It may be damaged or use an unsupported NWC version. Supported versions: 1.30–2.1 / 2.75.";
 "Choose a non-empty NWC file smaller than 16 MB." = "Choose a non-empty NWC file smaller than 16 MB.";
 "This is not a binary NoteWorthy Composer file. Choose the original .nwc file; changing a file’s extension does not convert it." = "This is not a binary NoteWorthy Composer file. Choose the original .nwc file; changing a file’s extension does not convert it.";
 "The converter is missing. Reinstall NWC Viewer or rebuild it using the setup instructions." = "The converter is missing. Reinstall NWC Viewer or rebuild it using the setup instructions.";
 "This file took too long to convert. It may be damaged or unsupported." = "This file took too long to convert. It may be damaged or unsupported.";
-"This file could not be opened. It may be damaged or use an unsupported NWC version. Supported versions: 1.30–2.1." = "This file could not be opened. It may be damaged or use an unsupported NWC version. Supported versions: 1.30–2.1.";
+"This file could not be opened. It may be damaged or use an unsupported NWC version. Supported versions: 1.30–2.1 / 2.75." = "This file could not be opened. It may be damaged or use an unsupported NWC version. Supported versions: 1.30–2.1 / 2.75.";
 "Sheet music" = "Sheet music";
 "NWC Viewer" = "NWC Viewer";
 "Zoom" = "Zoom";

@@ -17,7 +17,7 @@ python3 - "$ROOT" "$RELEASE_DIR" <<'PY'
 from pathlib import Path
 import sys, zipfile
 root, output = map(Path, sys.argv[1:])
-allowed = ['App', 'Resources', 'Vendor', 'Tests', 'Tools', '.github',
+allowed = ['Converter', 'App', 'Resources', 'Vendor', 'Tests', 'Tools', '.github',
            'NWCViewer.xcodeproj', 'README.md', 'RELEASE.md', 'LICENSE', '.gitignore']
 with zipfile.ZipFile(output/'NWCViewer-Source.zip', 'w', zipfile.ZIP_DEFLATED) as archive:
     for name in allowed:
@@ -40,7 +40,7 @@ Français : décompressez ce téléchargement, puis glissez NWC Viewer dans Appl
 Cliquez sur « Ouvrir un fichier NWC… », puis sur « Imprimer… » ou « Enregistrer en PDF… ».
 Pour changer la langue : Réglages Système → Général → Langue et région → Applications.
 
-Supports older binary NWC versions 1.30–2.1; newer scores may not open.
+Supports binary NWC versions 1.30–2.1 and 2.75. Some notation is unsupported; layout may differ.
 
 NWCViewer-Source.zip contains the corresponding source code and licenses
 under GNU GPL v2. Keep it with this distribution when sharing the app.

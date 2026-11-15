@@ -17,7 +17,7 @@ struct ScoreXML {
         parser.shouldResolveExternalEntities = false
         parser.delegate = reader
         guard parser.parse(), reader.root == "score-partwise", reader.hasNotes else {
-            throw ViewerError.message("This file could not be converted to a readable score. It may be damaged or use an unsupported NWC version. Supported versions: 1.30–2.1.")
+            throw ViewerError.message("This file could not be converted to a readable score. It may be damaged or use an unsupported NWC version. Supported versions: 1.30–2.1 / 2.75.")
         }
         return xml
     }
@@ -73,7 +73,7 @@ struct Converter {
         process.waitUntilExit()
         guard process.terminationReason == .exit, process.terminationStatus == 0,
               let result = try? Data(contentsOf: work.appendingPathComponent("score.xml")) else {
-            throw ViewerError.message("This file could not be opened. It may be damaged or use an unsupported NWC version. Supported versions: 1.30–2.1.")
+            throw ViewerError.message("This file could not be opened. It may be damaged or use an unsupported NWC version. Supported versions: 1.30–2.1 / 2.75.")
         }
         return try ScoreXML.validate(result)
     }

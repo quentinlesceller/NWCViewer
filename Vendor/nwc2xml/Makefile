@@ -14,9 +14,9 @@ ifeq ($(UNAME_S),Darwin)
 LDLIBS += -liconv
 endif
 
-OBJS = nwc2xml.o nwcfile.o nwcobj.o xmlsaver.o xmlwriter.o wxshim.o
+OBJS = ../../Converter/ModernNWC.o nwc2xml.o nwcfile.o nwcobj.o xmlsaver.o xmlwriter.o wxshim.o
 
-HEADERS = Precompile.h wxshim.h TVector.h nwcendian.h nwcobj.h nwcfile.h \
+HEADERS = ../../Converter/ModernNWC.h Precompile.h wxshim.h TVector.h nwcendian.h nwcobj.h nwcfile.h \
           XMLSaver.h XMLWriter.h nwc2xml-version.h
 
 all: nwc2xml
