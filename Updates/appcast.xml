@@ -1,0 +1,22 @@
+<?xml version="1.0" standalone="yes"?>
+<!-- sparkle-sign-warning:
+IMPORTANT: This file was signed by Sparkle. Any modifications to this file requires re-signing this file with generate_appcast or sign_update! The signed signature will be embedded at the end of this file.
+-->
+<rss xmlns:sparkle="http://www.andymatuschak.org/xml-namespaces/sparkle" version="2.0">
+    <channel>
+        <title>NWC Viewer</title>
+        <item>
+            <title>1.6</title>
+            <pubDate>Sun, 15 Nov 2026 15:00:47 -0500</pubDate>
+            <link>https://github.com/quentinlesceller/NWCViewer/releases</link>
+            <sparkle:version>7</sparkle:version>
+            <sparkle:shortVersionString>1.6</sparkle:shortVersionString>
+            <sparkle:minimumSystemVersion>13.0</sparkle:minimumSystemVersion>
+            <enclosure url="https://github.com/quentinlesceller/NWCViewer/releases/download/v1.6/NWCViewer-1.6-update.zip" length="2626775" type="application/octet-stream" sparkle:edSignature="CoCiQexNI5ZJNmBU0Vh5KDvxXGfpFe5F/4ozsxw5ZBzncr6SNWHeoH78nl8AF/12UNn7CrT0C0gjB2GoKV0ECA=="/>
+        </item>
+    </channel>
+</rss>
+<!-- sparkle-signatures:
+edSignature: VBt2iBh5FLkcIzFUOWUNxgvszazV/yPj3vXSIBiCdXM9RN2ZJXjdI4lcHA4fiN4LblrBjMMamzb4SDYfj6+8Bw==
+length: 1124
+-->
