@@ -15,9 +15,9 @@ GPL source; no extra runtime or developer tools are needed.
 
 1. Launch **NWC Viewer** and click **Open NWC File…** (or press Command–O).
 2. Choose the original `.nwc` file. Scroll normally with a mouse or trackpad.
-3. Use the magnifying-glass buttons to zoom from 50% to 200%; click the percentage to reset to 100%.
+3. Use the magnifying-glass buttons to zoom from 50% to 200%; use the percentage menu to choose Actual Size (100%).
 4. Click **Print…** (Command–P) for the macOS print dialog, or **Save PDF…** (Shift–Command–S) to save a PDF.
-5. Use **Fit Width** to fit a page to your window. You can also drag an `.nwc` file onto the app. The header shows the page count.
+5. Use **Fit Width** to fit a page to your window. You can also drag an `.nwc` file onto the app. The title area shows the page count. The compact toolbar follows macOS conventions; hover over an icon for its label, or use the File and View menus. Click the zoom percentage to choose a preset or Actual Size.
 
 Printing and PDF export capture each rendered score page into a vector PDF with A4 portrait pages, independent of viewing zoom. Printing uses the same PDF as saving. The print dialog can select another printer/paper size and scaling. For best results use A4, 100% scaling. Files associated with the app can also be opened from Finder / Open With. This is a viewer: it does not edit, play, or save NWC scores.
 
