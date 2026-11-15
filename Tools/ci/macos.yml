@@ -1,0 +1,17 @@
+name: macOS
+on: [push, pull_request]
+jobs:
+  test:
+    runs-on: macos-14
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check deterministic project
+        run: |
+          python3 Tools/generate_project.py
+          git diff --exit-code -- NWCViewer.xcodeproj
+      - name: Build and test native app and WebKit
+        run: Tools/test-macos.sh
+      - name: Test standalone converter
+        run: |
+          make -C Vendor/nwc2xml
+          python3 Tools/test_converter.py

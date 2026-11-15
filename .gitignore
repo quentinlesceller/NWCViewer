@@ -1,0 +1,12 @@
+.DS_Store
+DerivedData/
+build/
+*.xcuserstate
+xcuserdata/
+*.o
+Vendor/nwc2xml/nwc2xml
+__pycache__/
+.venv/
+*.xcresult
+
+dist/
