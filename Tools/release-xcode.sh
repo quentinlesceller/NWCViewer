@@ -29,8 +29,7 @@ lipo "$APP/Contents/Helpers/nwc2xml" -verify_arch x86_64
 # Remove only metadata disallowed by codesign; preserve other attributes.
 xattr -dr com.apple.FinderInfo "$APP" 2>/dev/null || true
 xattr -dr com.apple.ResourceFork "$APP" 2>/dev/null || true
-codesign --force --options runtime --timestamp --sign "$SIGN_IDENTITY" "$APP/Contents/Helpers/nwc2xml"
-codesign --force --options runtime --timestamp --sign "$SIGN_IDENTITY" "$APP"
+bash Tools/sign-app.sh "$APP"
 python3 - "$RELEASE_DIR/export-options.plist" "$TEAM_ID" <<'PY'
 import plistlib,sys
 with open(sys.argv[1],'wb') as f:

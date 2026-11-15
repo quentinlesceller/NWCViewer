@@ -53,3 +53,10 @@
 "Cancel" = "Annuler";
 "Apply" = "Appliquer";
 "Unable to show these voices. The previous selection will be restored." = "Impossible d’afficher ces voix. La sélection précédente sera rétablie.";
+
+// Software updates
+"Updates" = "Mises à jour";
+"Check for Updates…" = "Rechercher des mises à jour…";
+"Check for updates automatically" = "Rechercher automatiquement les mises à jour";
+"Download and install updates automatically" = "Télécharger et installer automatiquement les mises à jour";
+"Updates are checked daily and installed when you quit the app. Your scores stay on your Mac." = "Les mises à jour sont recherchées chaque jour et installées à la fermeture de l’app. Vos partitions restent sur votre Mac.";

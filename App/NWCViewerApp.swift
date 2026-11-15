@@ -4,6 +4,7 @@ import UniformTypeIdentifiers
 @main
 struct NWCViewerApp: App {
     @StateObject private var model = ViewerModel()
+    @StateObject private var updater = AppUpdater()
     var body: some Scene {
         Window("NWC Viewer", id: "viewer") {
             ContentView(model: model)
@@ -13,6 +14,9 @@ struct NWCViewerApp: App {
         .defaultSize(width: 1000, height: 800)
         .windowToolbarStyle(.unifiedCompact)
         .commands {
+            CommandGroup(after: .appInfo) {
+                Button("Check for Updates…", action: updater.checkForUpdates).disabled(!updater.canCheckForUpdates)
+            }
             CommandGroup(replacing: .newItem) {
                 Button("Open…", action: model.chooseFile).keyboardShortcut("o").disabled(model.busy || model.exporting)
             }
@@ -30,6 +34,7 @@ struct NWCViewerApp: App {
                 MeasuresPerLinePicker(model: model).disabled(!model.ready || model.exporting)
             }
         }
+        Settings { UpdateSettings(updater: updater) }
     }
 }
 

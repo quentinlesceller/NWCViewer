@@ -53,3 +53,10 @@
 "Cancel" = "Cancel";
 "Apply" = "Apply";
 "Unable to show these voices. The previous selection will be restored." = "Unable to show these voices. The previous selection will be restored.";
+
+// Software updates
+"Updates" = "Updates";
+"Check for Updates…" = "Check for Updates…";
+"Check for updates automatically" = "Check for updates automatically";
+"Download and install updates automatically" = "Download and install updates automatically";
+"Updates are checked daily and installed when you quit the app. Your scores stay on your Mac." = "Updates are checked daily and installed when you quit the app. Your scores stay on your Mac.";

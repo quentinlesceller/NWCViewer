@@ -42,8 +42,7 @@ lipo "$HELPER" -verify_arch x86_64
 # Remove only metadata disallowed by codesign; preserve other attributes.
 xattr -dr com.apple.FinderInfo "$APP" 2>/dev/null || true
 xattr -dr com.apple.ResourceFork "$APP" 2>/dev/null || true
-codesign --force --options runtime --timestamp --sign "$SIGN_IDENTITY" "$HELPER"
-codesign --force --options runtime --timestamp --sign "$SIGN_IDENTITY" "$APP"
+bash Tools/sign-app.sh "$APP"
 codesign --verify --deep --strict --verbose=2 "$APP"
 
 UPLOAD="$RELEASE_DIR/notarization-upload.zip"

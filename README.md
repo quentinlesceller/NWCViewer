@@ -4,12 +4,16 @@ A small native macOS app for opening **binary NoteWorthy Composer `.nwc` files**
 
 ## Download for Mac
 
-[Download NWC Viewer](https://github.com/quentinlesceller/NWCViewer/releases/download/v1.5/NWCViewer-1.5-macOS.zip)
+[Download NWC Viewer](https://github.com/quentinlesceller/NWCViewer/releases/download/v1.6/NWCViewer-1.6-macOS.zip)
 
 Requires macOS 13 or later; supports Intel and Apple silicon. Unzip the download,
 drag **NWC Viewer.app** into Applications, then open it. The release is Developer
 ID signed and notarized by Apple. The ZIP includes instructions and corresponding
 GPL source; no extra runtime or developer tools are needed.
+
+## Automatic updates
+
+Starting with 1.6, Sparkle checks daily, downloads signed updates, and installs them when the app quits. Use **NWC Viewer → Check for Updates…** for an immediate check, or **Settings…** to disable automatic checks/downloads. Scores never leave your Mac; GitHub receives ordinary update requests, without system profiling. Updating requires internet access; reading and printing do not. Versions 1.5 and earlier need one final manual installation of 1.6.
 
 ## Using the app
 
@@ -37,7 +41,7 @@ then run `python3 Tools/generate_project.py` and `python3 Tools/test_localizatio
 
 ## Build on a Mac
 
-Requirements: **macOS 13 or later**, **Xcode 15 or later** with its macOS SDK. Xcode 16 is recommended. No package manager, Java, Python, Node, network access, or separate converter installation is needed to build the checked-in project.
+Requirements: **macOS 13 or later**, **Xcode 15 or later** with its macOS SDK. Xcode 16 is recommended. Xcode downloads the pinned Sparkle 2.10.1 package on the first build; subsequent builds can use its cache. No additional package manager, Java, Node, or separate converter installation is needed.
 
 1. Open `NWCViewer.xcodeproj` in Xcode.
 2. Select scheme **NWCViewer**, destination **My Mac**.
@@ -60,7 +64,7 @@ The checked-in Xcode project is deterministic and has a shared scheme. To regene
 python3 Tools/generate_project.py
 ```
 
-For a universal release add `ARCHS='arm64 x86_64' ONLY_ACTIVE_ARCH=NO` to the build command. Distribution to other Macs requires your own Developer ID signing, hardened-runtime configuration and notarization, including signing the helper. The default local build is **not notarized** or configured for the Mac App Store. The app deliberately does not enable App Sandbox: the bundled legacy command-line parser is a child process. No network entitlement or web service is needed.
+For a universal release add `ARCHS='arm64 x86_64' ONLY_ACTIVE_ARCH=NO` to the build command. Distribution to other Macs requires your own Developer ID signing, hardened-runtime configuration and notarization, including signing the helper. The default local build is **not notarized** or configured for the Mac App Store. The app deliberately does not enable App Sandbox: the bundled legacy command-line parser is a child process. Score conversion and display work offline. The optional updater connects to GitHub over HTTPS.
 
 ## Conversion: what is actually supported
 
@@ -91,6 +95,7 @@ Everything below is bundled or part of macOS. End users install **no additional 
 | nwc2xml | v1.5, pinned port commit above | C++ standard library, system zlib and iconv | GPL v2, `Vendor/nwc2xml/LICENSE.TXT` |
 | OpenSheetMusicDisplay | 1.9.2, npm prebuilt UMD bundle | WKWebView JavaScript and SVG | BSD-3-Clause, `Resources/Licenses/OpenSheetMusicDisplay-BSD-3-Clause.txt` |
 | OSMD bundled libraries | VexFlow, JSZip, loglevel, typescript-collections and supporting libraries | Included in the UMD bundle | MIT/BSD-compatible notices; JSZip used under its MIT option; see `Resources/Licenses/OSMD-DEPENDENCY-NOTICES.txt` |
+| Sparkle | 2.10.1, pinned Swift package | Bundled updater framework and helpers | MIT, `Resources/Licenses/Sparkle-LICENSE.txt` |
 | zlib / iconv | macOS system versions | Supplied by macOS; not redistributed here | zlib / Apple's system libiconv distribution terms |
 
 The OSMD bundle was obtained from `https://registry.npmjs.org/opensheetmusicdisplay/-/opensheetmusicdisplay-1.9.2.tgz`. Its upstream npm tarball omits the separate minifier license file named in its header, so this project supplies collected dependency license texts under that filename, plus OSMD's license and author list. `Tools/notice-packages.lock.json` records the packages used to collect those notices; it is **not** a lockfile claiming the precise internal dependency graph used for OSMD's upstream prebuilt bundle.

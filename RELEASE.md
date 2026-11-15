@@ -73,3 +73,36 @@ the notarized app, staples and validates it, and calls `Tools/package-release.sh
 to produce the same app/instructions/corresponding-source family ZIP. It stops on
 failure and preserves logs in its release directory. The command-line profile
 route above remains available.
+
+## Automatic update releases (1.6+)
+
+Sparkle 2.10.1 is pinned by the Xcode project and Package.resolved. Xcode embeds and
+signs its framework/helpers. The current publisher uses the Xcode account route above.
+The EdDSA key already exists in the login Keychain, account
+`com.quentinlesceller.nwcviewer.sparkle`. Never regenerate or export that private key.
+Only the public key belongs in `Resources/Info.plist`. Keep this identity and the
+bundle ID stable, and increment **both** the version and numeric build number.
+
+`package-release.sh` also runs `prepare-update.sh`, which reads this Keychain key,
+creates `updates/NWCViewer-VERSION-update.zip` containing only the stapled app,
+and signs both the archive and `updates/appcast.xml`. It verifies the feed signature.
+Tools default to the Sparkle artifact in `build/ReleaseDerivedData/SourcePackages`;
+set `SPARKLE_BIN` to another resolved Sparkle 2.10.1 `bin` directory if needed.
+The standalone notarytool release route also needs this resolved tools path.
+
+For each release:
+
+1. Run `Tools/release-xcode.sh`, then smoke-test the signed app, including Settings
+   and Check for Updates. Do not publish intermediates if signing/notarization fails.
+2. Commit the source, create the matching version tag and GitHub release. Upload
+   the parent ZIP, corresponding `NWCViewer-Source.zip`, update ZIP and checksums.
+   Publish the release **before** changing the feed, so downloads already exist.
+3. Copy the generated signed `updates/appcast.xml` into `Updates/appcast.xml` and
+   commit/push it to main, preserving its exact bytes. Never edit a signed feed;
+   rerun `prepare-update.sh` if it needs changes. No GitHub Pages setup is required.
+4. Verify the public feed signature and download signature, then check from an older
+   updater-enabled copy. Keep its test installation separate from the normal app.
+
+The app-only update archive has its exact corresponding source alongside it in
+the same GitHub release. Keep these assets available together. Versions before 1.6
+cannot update themselves; install 1.6 manually once. User update preferences persist.

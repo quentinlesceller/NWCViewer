@@ -53,3 +53,10 @@
 "Cancel" = "Cancelar";
 "Apply" = "Aplicar";
 "Unable to show these voices. The previous selection will be restored." = "No se pudieron mostrar estas voces. Se restaurará la selección anterior.";
+
+// Software updates
+"Updates" = "Actualizaciones";
+"Check for Updates…" = "Buscar actualizaciones…";
+"Check for updates automatically" = "Buscar actualizaciones automáticamente";
+"Download and install updates automatically" = "Descargar e instalar actualizaciones automáticamente";
+"Updates are checked daily and installed when you quit the app. Your scores stay on your Mac." = "Las actualizaciones se buscan a diario y se instalan al salir de la app. Las partituras permanecen en tu Mac.";
