@@ -36,6 +36,18 @@ lipo "$APP/Contents/MacOS/NWC Viewer" -verify_arch x86_64
 lipo "$HELPER" -verify_arch arm64
 lipo "$HELPER" -verify_arch x86_64
 # Sign nested code first; do not use --deep as a substitute for signing each item.
+# iCloud Drive may attach Finder metadata after Xcode archives the bundle.
+# Remove only metadata disallowed by codesign; preserve other attributes.
+python3 - "$APP" <<'PYATTR'
+from pathlib import Path
+import os, sys
+root = Path(sys.argv[1])
+for item in [root, *root.rglob('*')]:
+    if item.is_symlink(): continue
+    for name in os.listxattr(item):
+        if name in ('com.apple.FinderInfo', 'com.apple.ResourceFork'):
+            os.removexattr(item, name)
+PYATTR
 codesign --force --options runtime --timestamp --sign "$SIGN_IDENTITY" "$HELPER"
 codesign --force --options runtime --timestamp --sign "$SIGN_IDENTITY" "$APP"
 codesign --verify --deep --strict --verbose=2 "$APP"
