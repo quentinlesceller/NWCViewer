@@ -4,7 +4,7 @@ A small native macOS app for opening **binary NoteWorthy Composer `.nwc` files**
 
 ## Download for Mac
 
-[Download NWC Viewer](https://github.com/quentinlesceller/NWCViewer/releases/download/v1.4/NWCViewer-1.4-macOS.zip)
+[Download NWC Viewer](https://github.com/quentinlesceller/NWCViewer/releases/download/v1.5/NWCViewer-1.5-macOS.zip)
 
 Requires macOS 13 or later; supports Intel and Apple silicon. Unzip the download,
 drag **NWC Viewer.app** into Applications, then open it. The release is Developer
@@ -172,3 +172,5 @@ Use the **Voices** toolbar button to select the parts you want. **Only** selects
 Printing and PDF export use exactly the displayed selection and measures-per-line setting. Changing the line density keeps your chosen voices. Opening a different score resets the selection to all its parts. Source files are never modified. Multi-measure rests may be grouped automatically in an extracted part.
 
 The renderer measures note widths once per voice selection, draws only the final fitted layout in normal cases, and reuses the parsed score and layout measurements when changing line density. Print/PDF output is cached until the score, voices or layout changes. Caches stay in memory; nothing is uploaded. `Voices.musicxml` is a synthetic three-part test score authored for this project.
+
+Measure numbers have extra vertical clearance above the staff and nearby notation, including in printed/PDF output. The small local OSMD engraving patch is documented in `Vendor/OSMD-PATCHES.md`.
