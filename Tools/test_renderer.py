@@ -18,6 +18,44 @@ class QuietHandler(SimpleHTTPRequestHandler):
     def log_message(self, *args): pass
 
 class RendererTests(unittest.TestCase):
+    def test_voice_selection_and_reused_layout(self):
+        server = ThreadingHTTPServer(('127.0.0.1', 0), partial(QuietHandler, directory=str(ROOT/'Resources/Web')))
+        Thread(target=server.serve_forever, daemon=True).start()
+        try:
+            with sync_playwright() as p, tempfile.TemporaryDirectory() as d:
+                options = {'headless': True}
+                if os.environ.get('CHROMIUM_BINARY'): options['executable_path'] = os.environ['CHROMIUM_BINARY']
+                browser = p.chromium.launch(**options)
+                page = browser.new_page()
+                page.goto(f'http://127.0.0.1:{server.server_port}/index.html')
+                info=page.evaluate('(xml)=>viewer.load(xml,4)',(ROOT/'Tests/Fixtures/Voices.musicxml').read_text())
+                self.assertEqual(info['renderedPartCount'],3)
+                alto=page.evaluate('viewer.configure(4,["alto"])')
+                self.assertEqual(alto['selectedPartIDs'],['alto'])
+                self.assertEqual(alto['renderedPartCount'],1)
+                self.assertEqual(alto['sourceMeasureCount'],4)
+                self.assertEqual(alto['measuresPerLine'],[4])
+                for choice in [2,4]:
+                    updated=page.evaluate('(n)=>viewer.configure(n,["alto"])',choice)
+                    self.assertEqual(updated['parses'],alto['parses'])
+                    self.assertEqual(updated['renderedPartCount'],1)
+                output=Path(d)/'alto.pdf'
+                page.pdf(path=str(output),prefer_css_page_size=True)
+                text=''.join(p.extract_text() for p in PdfReader(output).pages)
+                self.assertIn('AltoTest',text)
+                self.assertNotIn('SopranoTest',text)
+                self.assertNotIn('BassTest',text)
+                for ids in [[],['missing']]:
+                    rejected=page.evaluate('(ids)=>viewer.configure(4,ids).then(()=>false,()=>true)',ids)
+                    self.assertTrue(rejected)
+                    self.assertEqual(page.evaluate('viewer.layoutInfo().selectedPartIDs'),['alto'])
+                info=page.evaluate('viewer.configure(4,null)')
+                self.assertEqual(info['renderedPartCount'],3)
+                self.assertEqual(info['sourceMeasureCount'],4)
+                browser.close()
+        finally:
+            server.shutdown(); server.server_close()
+
     def test_offline_render_zoom_and_paginated_pdf(self):
         server = ThreadingHTTPServer(('127.0.0.1', 0), partial(QuietHandler, directory=str(ROOT/'Resources/Web')))
         Thread(target=server.serve_forever, daemon=True).start()

@@ -45,3 +45,11 @@
 "More measures makes the notation smaller." = "Más compases reduce el tamaño de las notas.";
 "Updating layout…" = "Actualizando la disposición…";
 "Unable to apply this layout. Try fewer measures per line." = "No se pudo aplicar esta disposición. Pruebe con menos compases por línea.";
+"Voices" = "Voces";
+"Choose voices" = "Elegir voces";
+"Choose the parts to display, print, and save as PDF." = "Elija las partes que desea mostrar, imprimir y guardar como PDF.";
+"Only" = "Solo";
+"All voices" = "Todas las voces";
+"Cancel" = "Cancelar";
+"Apply" = "Aplicar";
+"Unable to show these voices. The previous selection will be restored." = "No se pudieron mostrar estas voces. Se restaurará la selección anterior.";

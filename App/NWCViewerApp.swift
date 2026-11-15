@@ -36,6 +36,7 @@ struct NWCViewerApp: App {
 struct ContentView: View {
     @ObservedObject var model: ViewerModel
     @State private var dropTarget = false
+    @State private var showingVoices = false
     var body: some View {
         VStack(spacing: 0) {
             ZStack {
@@ -103,6 +104,14 @@ struct ContentView: View {
                     .labelStyle(.iconOnly).help("Fit the page to the window").disabled(!model.ready || model.exporting)
             }
             ToolbarItem(placement: .automatic) {
+                Button { showingVoices = true } label: { Label("Voices", systemImage: "person.3") }
+                    .labelStyle(.iconOnly).help("Choose voices")
+                    .disabled(!model.ready || model.exporting)
+                    .popover(isPresented: $showingVoices) {
+                        VoicesPicker(model: model) { showingVoices = false }
+                    }
+            }
+            ToolbarItem(placement: .automatic) {
                 Menu {
                     MeasuresPerLinePicker(model: model)
                     Divider()
@@ -135,5 +144,41 @@ struct MeasuresPerLinePicker: View {
                 Text(verbatim: String(count)).tag(count)
             }
         }
+    }
+}
+
+struct VoicesPicker: View {
+    @ObservedObject var model: ViewerModel
+    let dismiss: () -> Void
+    @State private var selection: Set<String> = []
+    var body: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            Text("Voices").font(.headline)
+            Text("Choose the parts to display, print, and save as PDF.")
+                .font(.callout).foregroundStyle(.secondary).fixedSize(horizontal: false, vertical: true)
+            ScrollView {
+                VStack(alignment: .leading, spacing: 10) {
+                    ForEach(model.parts) { part in
+                        HStack {
+                            Toggle(isOn: Binding(get: { selection.contains(part.id) }, set: { on in
+                                if on { selection.insert(part.id) } else { selection.remove(part.id) }
+                            })) { Text(verbatim: part.name) }
+                            Spacer()
+                            Button("Only") { selection = [part.id] }
+                                .accessibilityLabel(Text("Only") + Text(verbatim: " " + part.name))
+                        }
+                    }
+                }.padding(2)
+            }.frame(maxHeight: 280)
+            HStack {
+                Button("All voices") { selection = Set(model.parts.map(\.id)) }
+                Spacer()
+                Button("Cancel", action: dismiss).keyboardShortcut(.cancelAction)
+                Button("Apply") { model.setVisibleParts(selection); dismiss() }
+                    .keyboardShortcut(.defaultAction).disabled(selection.isEmpty)
+            }
+        }
+        .padding(16).frame(width: 360)
+        .onAppear { selection = model.selectedPartIDs }
     }
 }

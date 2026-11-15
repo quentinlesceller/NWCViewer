@@ -4,7 +4,7 @@ A small native macOS app for opening **binary NoteWorthy Composer `.nwc` files**
 
 ## Download for Mac
 
-[Download NWC Viewer](https://github.com/quentinlesceller/NWCViewer/releases/download/v1.3/NWCViewer-1.3-macOS.zip)
+[Download NWC Viewer](https://github.com/quentinlesceller/NWCViewer/releases/download/v1.4/NWCViewer-1.4-macOS.zip)
 
 Requires macOS 13 or later; supports Intel and Apple silicon. Unzip the download,
 drag **NWC Viewer.app** into Applications, then open it. The release is Developer
@@ -164,3 +164,11 @@ See [RELEASE.md](RELEASE.md) for the Developer ID and notarization setup. On a M
 Choose **Measures per line** in the toolbar or View menu: Automatic, 2, 3, 4, 6 or 8. The default is four, and the app remembers your selection. This changes the score layout and its print/PDF output. Screen zoom only changes on-screen magnification.
 
 Fixed counts override the original line/page breaks. Notation is scaled down to fit dense passages without forcing overlapping notes; higher counts produce smaller notation. The final line may contain fewer measures. Automatic retains the original breaks where present and lets the renderer fit the remaining measures. Very dense scores that cannot fit at the minimum scale fall back to the previous layout with an error message.
+
+## Choose voices
+
+Use the **Voices** toolbar button to select the parts you want. **Only** selects a single part; **All voices** restores the complete score. Click **Apply** to reflow once after making your choices. At least one voice must remain selected. Names come from the score (for example, an alto part may be named “A”). A part containing multiple staves stays together.
+
+Printing and PDF export use exactly the displayed selection and measures-per-line setting. Changing the line density keeps your chosen voices. Opening a different score resets the selection to all its parts. Source files are never modified. Multi-measure rests may be grouped automatically in an extracted part.
+
+The renderer measures note widths once per voice selection, draws only the final fitted layout in normal cases, and reuses the parsed score and layout measurements when changing line density. Print/PDF output is cached until the score, voices or layout changes. Caches stay in memory; nothing is uploaded. `Voices.musicxml` is a synthetic three-part test score authored for this project.

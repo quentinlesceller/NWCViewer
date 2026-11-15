@@ -45,3 +45,11 @@
 "More measures makes the notation smaller." = "Più battute riducono la dimensione delle note.";
 "Updating layout…" = "Aggiornamento dell’impaginazione…";
 "Unable to apply this layout. Try fewer measures per line." = "Impossibile applicare questa impaginazione. Prova con meno battute per riga.";
+"Voices" = "Voci";
+"Choose voices" = "Scegli le voci";
+"Choose the parts to display, print, and save as PDF." = "Scegli le parti da visualizzare, stampare e salvare in PDF.";
+"Only" = "Solo";
+"All voices" = "Tutte le voci";
+"Cancel" = "Annulla";
+"Apply" = "Applica";
+"Unable to show these voices. The previous selection will be restored." = "Impossibile visualizzare queste voci. Verrà ripristinata la selezione precedente.";

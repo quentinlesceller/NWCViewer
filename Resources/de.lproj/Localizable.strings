@@ -45,3 +45,11 @@
 "More measures makes the notation smaller." = "Mehr Takte verkleinern die Noten.";
 "Updating layout…" = "Layout wird aktualisiert…";
 "Unable to apply this layout. Try fewer measures per line." = "Dieses Layout konnte nicht angewendet werden. Versuchen Sie weniger Takte pro Zeile.";
+"Voices" = "Stimmen";
+"Choose voices" = "Stimmen auswählen";
+"Choose the parts to display, print, and save as PDF." = "Wählen Sie die Stimmen zum Anzeigen, Drucken und Speichern als PDF.";
+"Only" = "Nur diese";
+"All voices" = "Alle Stimmen";
+"Cancel" = "Abbrechen";
+"Apply" = "Anwenden";
+"Unable to show these voices. The previous selection will be restored." = "Diese Stimmen konnten nicht angezeigt werden. Die vorherige Auswahl wird wiederhergestellt.";

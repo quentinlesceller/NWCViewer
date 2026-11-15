@@ -45,3 +45,11 @@
 "More measures makes the notation smaller." = "More measures makes the notation smaller.";
 "Updating layout…" = "Updating layout…";
 "Unable to apply this layout. Try fewer measures per line." = "Unable to apply this layout. Try fewer measures per line.";
+"Voices" = "Voices";
+"Choose voices" = "Choose voices";
+"Choose the parts to display, print, and save as PDF." = "Choose the parts to display, print, and save as PDF.";
+"Only" = "Only";
+"All voices" = "All voices";
+"Cancel" = "Cancel";
+"Apply" = "Apply";
+"Unable to show these voices. The previous selection will be restored." = "Unable to show these voices. The previous selection will be restored.";

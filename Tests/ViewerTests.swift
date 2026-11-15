@@ -127,6 +127,18 @@ final class ViewerTests: XCTestCase {
             XCTAssertEqual(pdf.pageCount, info?["pages"] as? Int)
         }
 
+        let voicesURL = try XCTUnwrap(Bundle(for: Self.self).url(forResource: "Voices", withExtension: "musicxml", subdirectory: "Fixtures"))
+        let voicesXML = try String(contentsOf: voicesURL, encoding: .utf8)
+        _ = try await view.callAsyncJavaScript("await viewer.load(xml,4)", arguments: ["xml": voicesXML], in: nil, contentWorld: .page)
+        let info = try await view.callAsyncJavaScript("return await viewer.configure(4, ['alto'])", arguments: [:], in: nil, contentWorld: .page) as? [String: Any]
+        XCTAssertEqual(info?["renderedPartCount"] as? Int, 1)
+        XCTAssertEqual(info?["sourceMeasureCount"] as? Int, 4)
+        let soloPDF = try await ScorePDF.make(from: view)
+        let text = soloPDF.string ?? ""
+        XCTAssertTrue(text.contains("AltoTest"))
+        XCTAssertFalse(text.contains("SopranoTest"))
+        XCTAssertFalse(text.contains("BassTest"))
+
     }
 }
 

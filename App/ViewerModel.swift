@@ -4,9 +4,16 @@ import SwiftUI
 import WebKit
 import UniformTypeIdentifiers
 
+struct ScorePart: Identifiable {
+    let id: String
+    let name: String
+}
+
 @MainActor
 final class ViewerModel: ObservableObject {
     @Published var title = "NWC Viewer"
+    @Published private(set) var parts: [ScorePart] = []
+    @Published private(set) var selectedPartIDs: Set<String> = []
     @Published var busy = false
     @Published var ready = false
     @Published var hasScore = false
@@ -23,6 +30,9 @@ final class ViewerModel: ObservableObject {
     private var xml: String?
     private var previousMeasuresPerLine: Int?
     private var webReady = false
+    private var rendererHasScore = false
+    private var previousPartIDs: Set<String>?
+    private var cachedPDF: PDFDocument?
 
     func chooseFile() {
         guard !busy, !exporting else { return }
@@ -37,6 +47,9 @@ final class ViewerModel: ObservableObject {
     func open(_ url: URL) {
         guard !busy, !exporting else { return }
         error = nil
+        parts = []; selectedPartIDs = []; previousPartIDs = nil
+        previousMeasuresPerLine = nil; updatingLayout = false
+        rendererHasScore = false; cachedPDF = nil
         busy = true; ready = false; hasScore = false; xml = nil; pageCount = 0
         title = url.deletingPathExtension().lastPathComponent
         let access = url.startAccessingSecurityScopedResource()
@@ -57,23 +70,43 @@ final class ViewerModel: ObservableObject {
         }
     }
 
-    func pageLoaded() { webReady = true; renderIfPossible() }
+    func pageLoaded() { webReady = true; rendererHasScore = false; renderIfPossible() }
     func pageFailed(_ message: String) { busy = false; ready = false; hasScore = false; error = NSLocalizedString(message, comment: "Renderer error") }
     private func renderIfPossible() {
         guard webReady, let xml, let webView else { return }
-        // Arguments are serialized by WebKit, never interpolated into JavaScript/HTML.
-        webView.callAsyncJavaScript("await window.viewer.load(xml, measures); return document.querySelectorAll('.music-page svg').length;", arguments: ["xml": xml, "measures": measuresPerLine], in: nil, in: .page) { [weak self] result in
+        cachedPDF = nil
+        var arguments: [String: Any] = ["measures": measuresPerLine,
+            "ids": selectedPartIDs.isEmpty ? NSNull() : Array(selectedPartIDs) as Any]
+        if !rendererHasScore { arguments["xml"] = xml }
+        let script = rendererHasScore
+            ? "return await window.viewer.configure(measures, ids);"
+            : "return await window.viewer.load(xml, measures, ids);"
+        webView.callAsyncJavaScript(script, arguments: arguments, in: nil, in: .page) { [weak self] result in
             Task { @MainActor in
                 guard let self else { return }
-                self.busy = false
-                self.updatingLayout = false
+                self.busy = false; self.updatingLayout = false
                 switch result {
-                case .success(let count):
-                    self.previousMeasuresPerLine = nil
-                    self.pageCount = count as? Int ?? 0
+                case .success(let value):
+                    guard let info = value as? [String: Any], let pages = info["pages"] as? Int else {
+                        self.pageFailed("The sheet music could not be displayed. Try another NWC file.")
+                        return
+                    }
+                    self.parts = (info["parts"] as? [[String: String]] ?? []).compactMap { part in
+                        guard let id = part["id"], let name = part["name"] else { return nil }
+                        return ScorePart(id: id, name: name)
+                    }
+                    self.selectedPartIDs = Set(info["selectedPartIDs"] as? [String] ?? [])
+                    self.rendererHasScore = true
+                    self.previousMeasuresPerLine = nil; self.previousPartIDs = nil
+                    self.pageCount = pages
                     self.ready = true; self.hasScore = true; self.fitWidth()
                 case .failure:
-                    if self.measuresPerLine != 0 || self.previousMeasuresPerLine != nil {
+                    if let previous = self.previousPartIDs {
+                        self.selectedPartIDs = previous; self.previousPartIDs = nil
+                        self.error = NSLocalizedString("Unable to show these voices. The previous selection will be restored.", comment: "Voice error")
+                        self.busy = true; self.updatingLayout = true
+                        self.renderIfPossible()
+                    } else if self.measuresPerLine != 0 || self.previousMeasuresPerLine != nil {
                         self.measuresPerLine = self.previousMeasuresPerLine ?? 0
                         self.previousMeasuresPerLine = nil
                         UserDefaults.standard.set(self.measuresPerLine, forKey: "measuresPerLine")
@@ -87,6 +120,15 @@ final class ViewerModel: ObservableObject {
             }
         }
     }
+    func setVisibleParts(_ ids: Set<String>) {
+        guard ready, !busy, !exporting, !ids.isEmpty,
+              ids.isSubset(of: Set(parts.map(\.id))), ids != selectedPartIDs else { return }
+        previousPartIDs = selectedPartIDs
+        selectedPartIDs = ids
+        updatingLayout = true; busy = true; ready = false
+        renderIfPossible()
+    }
+
     func setMeasuresPerLine(_ value: Int) {
         guard ready, !busy, !exporting, [0, 2, 3, 4, 6, 8].contains(value), value != measuresPerLine else { return }
         previousMeasuresPerLine = measuresPerLine
@@ -118,7 +160,12 @@ final class ViewerModel: ObservableObject {
         Task {
             defer { exporting = false }
             do {
-                let document = try await ScorePDF.make(from: webView)
+                let document: PDFDocument
+                if let cachedPDF { document = cachedPDF }
+                else {
+                    document = try await ScorePDF.make(from: webView)
+                    cachedPDF = document
+                }
                 if let destination {
                     guard let data = document.dataRepresentation() else { throw ViewerError.message("Unable to create PDF.") }
                     try data.write(to: destination, options: .atomic)
