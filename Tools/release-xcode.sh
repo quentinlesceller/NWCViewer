@@ -10,7 +10,10 @@ export BUNDLE_ID="${BUNDLE_ID:-com.quentinlesceller.nwcviewer}"
 bash Tools/test-macos.sh
 mkdir -p dist
 RELEASE_DIR="$(mktemp -d "$ROOT/dist/NWCViewer-XXXXXX")"
-ARCHIVE="$RELEASE_DIR/NWCViewer.xcarchive"
+# Keep signing operations outside cloud-synced folders.
+ARCHIVE_DIR="$(mktemp -d "${TMPDIR:-/tmp}/NWCViewer-archive.XXXXXX")"
+ARCHIVE="$ARCHIVE_DIR/NWCViewer.xcarchive"
+printf 'Archive: %s\n' "$ARCHIVE"
 xcodebuild -project NWCViewer.xcodeproj -scheme NWCViewer -configuration Release \
   -destination 'generic/platform=macOS' -archivePath "$ARCHIVE" \
   -derivedDataPath build/ReleaseDerivedData ARCHS='arm64 x86_64' ONLY_ACTIVE_ARCH=NO \
