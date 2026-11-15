@@ -27,6 +27,7 @@ struct NWCViewerApp: App {
                 Button("Zoom Out") { model.changeZoom(-0.1) }.keyboardShortcut("-").disabled(!model.ready || model.exporting)
                 Button("Actual Size") { model.setZoom(1) }.keyboardShortcut("0").disabled(!model.ready || model.exporting)
                 Button("Fit Width", action: model.fitWidth).disabled(!model.ready || model.exporting)
+                MeasuresPerLinePicker(model: model).disabled(!model.ready || model.exporting)
             }
         }
     }
@@ -44,7 +45,11 @@ struct ContentView: View {
                 if model.busy {
                     VStack(spacing: 16) {
                         ProgressView()
-                        Text("Opening your score…").font(.headline)
+                        if model.updatingLayout {
+                            Text("Updating layout…").font(.headline)
+                        } else {
+                            Text("Opening your score…").font(.headline)
+                        }
                     }.frame(maxWidth: .infinity, maxHeight: .infinity).background(.background)
                 } else if !model.hasScore {
                     VStack(spacing: 18) {
@@ -97,6 +102,17 @@ struct ContentView: View {
                 Button(action: model.fitWidth) { Label("Fit Width", systemImage: "arrow.left.and.right.righttriangle.left.righttriangle.right") }
                     .labelStyle(.iconOnly).help("Fit the page to the window").disabled(!model.ready || model.exporting)
             }
+            ToolbarItem(placement: .automatic) {
+                Menu {
+                    MeasuresPerLinePicker(model: model)
+                    Divider()
+                    Text("More measures makes the notation smaller.")
+                } label: {
+                    Label("Measures per line", systemImage: "rectangle.split.3x1")
+                }
+                .labelStyle(.iconOnly).help("Measures per line")
+                .disabled(!model.ready || model.exporting)
+            }
             ToolbarItemGroup(placement: .automatic) {
                 Button { model.printScore(export: false) } label: { Label("Print…", systemImage: "printer") }
                     .labelStyle(.iconOnly).help("Print…").disabled(!model.ready || model.exporting)
@@ -107,5 +123,17 @@ struct ContentView: View {
         .alert("Unable to open or export score", isPresented: Binding(get: { model.error != nil }, set: { if !$0 { model.error = nil } })) {
             Button("OK") { model.error = nil }
         } message: { Text(model.error ?? "") }
+    }
+}
+
+struct MeasuresPerLinePicker: View {
+    @ObservedObject var model: ViewerModel
+    var body: some View {
+        Picker("Measures per line", selection: Binding(get: { model.measuresPerLine }, set: { model.setMeasuresPerLine($0) })) {
+            Text("Automatic").tag(0)
+            ForEach([2, 3, 4, 6, 8], id: \.self) { count in
+                Text(verbatim: String(count)).tag(count)
+            }
+        }
     }
 }

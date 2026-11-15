@@ -40,3 +40,8 @@
 "Sheet music" = "Partitur";
 "NWC Viewer" = "NWC Viewer";
 "Zoom" = "Zoom";
+"Measures per line" = "Takte pro Zeile";
+"Automatic" = "Automatisch";
+"More measures makes the notation smaller." = "Mehr Takte verkleinern die Noten.";
+"Updating layout…" = "Layout wird aktualisiert…";
+"Unable to apply this layout. Try fewer measures per line." = "Dieses Layout konnte nicht angewendet werden. Versuchen Sie weniger Takte pro Zeile.";

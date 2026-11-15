@@ -40,3 +40,8 @@
 "Sheet music" = "Spartito";
 "NWC Viewer" = "NWC Viewer";
 "Zoom" = "Zoom";
+"Measures per line" = "Battute per riga";
+"Automatic" = "Automatico";
+"More measures makes the notation smaller." = "Più battute riducono la dimensione delle note.";
+"Updating layout…" = "Aggiornamento dell’impaginazione…";
+"Unable to apply this layout. Try fewer measures per line." = "Impossibile applicare questa impaginazione. Prova con meno battute per riga.";

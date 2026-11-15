@@ -40,3 +40,8 @@
 "Sheet music" = "Partitura";
 "NWC Viewer" = "NWC Viewer";
 "Zoom" = "Zoom";
+"Measures per line" = "Compases por línea";
+"Automatic" = "Automático";
+"More measures makes the notation smaller." = "Más compases reduce el tamaño de las notas.";
+"Updating layout…" = "Actualizando la disposición…";
+"Unable to apply this layout. Try fewer measures per line." = "No se pudo aplicar esta disposición. Pruebe con menos compases por línea.";

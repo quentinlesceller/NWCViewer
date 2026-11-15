@@ -40,3 +40,8 @@
 "Sheet music" = "Sheet music";
 "NWC Viewer" = "NWC Viewer";
 "Zoom" = "Zoom";
+"Measures per line" = "Measures per line";
+"Automatic" = "Automatic";
+"More measures makes the notation smaller." = "More measures makes the notation smaller.";
+"Updating layout…" = "Updating layout…";
+"Unable to apply this layout. Try fewer measures per line." = "Unable to apply this layout. Try fewer measures per line.";

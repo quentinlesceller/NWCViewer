@@ -37,6 +37,17 @@ class RendererTests(unittest.TestCase):
                     score.write_bytes(fixture.read_bytes())
                     subprocess.run([str(ROOT/'Vendor/nwc2xml/nwc2xml'), str(score)], check=True, capture_output=True, timeout=20)
                     page.evaluate('(xml)=>window.viewer.load(xml)', score.with_suffix('.xml').read_text())
+                    # A fixed count must reflow music, not merely cap the old layout.
+                    for count in [2, 3, 4, 6, 8, 0]:
+                        page.evaluate('([xml,count])=>window.viewer.load(xml,count)', [score.with_suffix('.xml').read_text(),count])
+                        info=page.evaluate('window.viewer.layoutInfo()')
+                        lines=info['measuresPerLine']
+                        self.assertTrue(lines)
+                        if count:
+                            self.assertTrue(all(n==count for n in lines[:-1]),(fixture.name,count,lines))
+                            self.assertLessEqual(lines[-1],count)
+                    # Export the default four-measure layout at different screen zooms.
+                    page.evaluate('(xml)=>window.viewer.load(xml,4)',score.with_suffix('.xml').read_text())
                     pages = page.locator('.music-page svg').count()
                     self.assertGreater(pages, 0)
                     dimensions=page.locator('.music-page svg').first.evaluate('(s)=>[s.viewBox.baseVal.width,s.viewBox.baseVal.height]')

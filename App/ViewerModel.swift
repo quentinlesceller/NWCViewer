@@ -11,11 +11,17 @@ final class ViewerModel: ObservableObject {
     @Published var ready = false
     @Published var hasScore = false
     @Published var zoom = 1.0
+    @Published private(set) var measuresPerLine: Int = {
+        let saved = UserDefaults.standard.object(forKey: "measuresPerLine") as? Int ?? 4
+        return [0, 2, 3, 4, 6, 8].contains(saved) ? saved : 4
+    }()
+    @Published var updatingLayout = false
     @Published var pageCount = 0
     @Published var exporting = false
     @Published var error: String?
     weak var webView: WKWebView?
     private var xml: String?
+    private var previousMeasuresPerLine: Int?
     private var webReady = false
 
     func chooseFile() {
@@ -56,19 +62,38 @@ final class ViewerModel: ObservableObject {
     private func renderIfPossible() {
         guard webReady, let xml, let webView else { return }
         // Arguments are serialized by WebKit, never interpolated into JavaScript/HTML.
-        webView.callAsyncJavaScript("await window.viewer.load(xml); return document.querySelectorAll('.music-page svg').length;", arguments: ["xml": xml], in: nil, in: .page) { [weak self] result in
+        webView.callAsyncJavaScript("await window.viewer.load(xml, measures); return document.querySelectorAll('.music-page svg').length;", arguments: ["xml": xml, "measures": measuresPerLine], in: nil, in: .page) { [weak self] result in
             Task { @MainActor in
                 guard let self else { return }
                 self.busy = false
+                self.updatingLayout = false
                 switch result {
                 case .success(let count):
+                    self.previousMeasuresPerLine = nil
                     self.pageCount = count as? Int ?? 0
                     self.ready = true; self.hasScore = true; self.fitWidth()
                 case .failure:
-                    self.pageFailed("The sheet music could not be displayed. Try another NWC file.")
+                    if self.measuresPerLine != 0 || self.previousMeasuresPerLine != nil {
+                        self.measuresPerLine = self.previousMeasuresPerLine ?? 0
+                        self.previousMeasuresPerLine = nil
+                        UserDefaults.standard.set(self.measuresPerLine, forKey: "measuresPerLine")
+                        self.error = NSLocalizedString("Unable to apply this layout. Try fewer measures per line.", comment: "Layout error")
+                        self.busy = true; self.updatingLayout = true
+                        self.renderIfPossible()
+                    } else {
+                        self.pageFailed("The sheet music could not be displayed. Try another NWC file.")
+                    }
                 }
             }
         }
+    }
+    func setMeasuresPerLine(_ value: Int) {
+        guard ready, !busy, !exporting, [0, 2, 3, 4, 6, 8].contains(value), value != measuresPerLine else { return }
+        previousMeasuresPerLine = measuresPerLine
+        measuresPerLine = value
+        UserDefaults.standard.set(value, forKey: "measuresPerLine")
+        updatingLayout = true; busy = true; ready = false
+        renderIfPossible()
     }
     func fitWidth() {
         guard let webView else { return }

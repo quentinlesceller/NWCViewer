@@ -40,3 +40,8 @@
 "Sheet music" = "Partition";
 "NWC Viewer" = "NWC Viewer";
 "Zoom" = "Zoom";
+"Measures per line" = "Mesures par ligne";
+"Automatic" = "Automatique";
+"More measures makes the notation smaller." = "Plus de mesures réduit la taille des notes.";
+"Updating layout…" = "Mise en page en cours…";
+"Unable to apply this layout. Try fewer measures per line." = "Impossible d’appliquer cette mise en page. Essayez moins de mesures par ligne.";

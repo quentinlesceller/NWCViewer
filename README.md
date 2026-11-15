@@ -4,7 +4,7 @@ A small native macOS app for opening **binary NoteWorthy Composer `.nwc` files**
 
 ## Download for Mac
 
-[Download NWC Viewer](https://github.com/quentinlesceller/NWCViewer/releases/download/v1.2/NWCViewer-1.2-macOS.zip)
+[Download NWC Viewer](https://github.com/quentinlesceller/NWCViewer/releases/download/v1.3/NWCViewer-1.3-macOS.zip)
 
 Requires macOS 13 or later; supports Intel and Apple silicon. Unzip the download,
 drag **NWC Viewer.app** into Applications, then open it. The release is Developer
@@ -158,3 +158,9 @@ The browser suite converts all fixtures, renders with network requests monitored
 ## Signing and sharing with family
 
 See [RELEASE.md](RELEASE.md) for the Developer ID and notarization setup. On a Mac with your own signing identity and Keychain notarization profile, `Tools/release-macos.sh` tests, builds a universal app, signs and notarizes it, and creates a family download containing the app, instructions and corresponding GPL source. If your developer account is already signed in to Xcode, use `Tools/release-xcode.sh`; this uses Xcode’s Keychain authentication without creating a separate notarization profile.
+
+## Measures per line
+
+Choose **Measures per line** in the toolbar or View menu: Automatic, 2, 3, 4, 6 or 8. The default is four, and the app remembers your selection. This changes the score layout and its print/PDF output. Screen zoom only changes on-screen magnification.
+
+Fixed counts override the original line/page breaks. Notation is scaled down to fit dense passages without forcing overlapping notes; higher counts produce smaller notation. The final line may contain fewer measures. Automatic retains the original breaks where present and lets the renderer fit the remaining measures. Very dense scores that cannot fit at the minimum scale fall back to the previous layout with an error message.

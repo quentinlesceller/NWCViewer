@@ -96,7 +96,7 @@ final class ViewerTests: XCTestCase {
         await fulfillment(of: [loaded], timeout: 15)
         XCTAssertNil(delegate.error)
         let xml = try Converter(executable: helper).convert(fixture("Flee"))
-        _ = try await view.callAsyncJavaScript("await window.viewer.load(xml);", arguments: ["xml": xml], in: nil, contentWorld: .page)
+        _ = try await view.callAsyncJavaScript("await window.viewer.load(xml, 0);", arguments: ["xml": xml], in: nil, contentWorld: .page)
         let pages = try await view.evaluateJavaScript("document.querySelectorAll('.music-page svg').length") as? Int
         XCTAssertGreaterThan(pages ?? 0, 0)
         _ = try await view.callAsyncJavaScript("window.viewer.zoom(value)", arguments: ["value": 1.5], in: nil, contentWorld: .page)
@@ -112,6 +112,19 @@ final class ViewerTests: XCTestCase {
                 XCTAssertEqual(page.bounds(for: .mediaBox).height, 841.8898, accuracy: 0.1)
                 XCTAssertGreaterThan(page.dataRepresentation?.count ?? 0, 5000, "PDF page must contain rendered music")
             }
+        }
+
+        for measures in [4, 2, 8, 0] {
+            _ = try await view.callAsyncJavaScript("await window.viewer.load(xml, measures)", arguments: ["xml": xml, "measures": measures], in: nil, contentWorld: .page)
+            let info = try await view.evaluateJavaScript("window.viewer.layoutInfo()") as? [String: Any]
+            let lines = try XCTUnwrap(info?["measuresPerLine"] as? [Int])
+            XCTAssertFalse(lines.isEmpty)
+            if measures > 0 {
+                XCTAssertTrue(lines.dropLast().allSatisfy { $0 == measures })
+                XCTAssertLessThanOrEqual(lines.last ?? 0, measures)
+            }
+            let pdf = try await ScorePDF.make(from: view)
+            XCTAssertEqual(pdf.pageCount, info?["pages"] as? Int)
         }
 
     }
