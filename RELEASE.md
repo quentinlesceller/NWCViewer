@@ -47,7 +47,7 @@ xcrun notarytool log SUBMISSION_ID --keychain-profile NWCViewer-notary
 ## Check and send
 
 1. Open the **signed app in the release folder**, not an older Xcode build. Open an actual score your parents use. Verify its pages, zoom, printing and PDF export against the checklist in README.md. Notarization checks Apple's security requirements; it does not verify that the app works or that a score converts correctly.
-2. Send **`dist/NWCViewer-.../NWCViewer-for-family.zip`** using AirDrop, email or a download link. It includes the notarized app, short instructions, and the complete corresponding source ZIP required when sharing this GPL distribution.
+2. Send **`dist/NWCViewer-.../NWCViewer-VERSION-macOS.zip`** using AirDrop, email or a download link. It includes the notarized app, short instructions, and the complete corresponding source ZIP required when sharing this GPL distribution.
 3. Your parents unzip it, drag **NWC Viewer.app** into Applications, and open it. A normal “downloaded from the internet” confirmation may appear. They should not need to disable Gatekeeper or remove quarantine attributes. If macOS says the developer cannot be verified, revisit signing/notarization rather than asking them to bypass it.
 
 Keep the bundle identifier stable for future builds and increment the version/build fields in `Resources/Info.plist` for releases. The `dist` directory is ignored by Git and is not included in the source archive.

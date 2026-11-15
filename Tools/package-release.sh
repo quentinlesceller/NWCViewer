@@ -47,7 +47,8 @@ under GNU GPL v2. Keep it with this distribution when sharing the app.
 TEXT
 # Include only the stapled app, instructions and source in the parents' download.
 cp "$RELEASE_DIR/NWCViewer-Source.zip" "$RELEASE_DIR/Read Me.txt" "$STAGING/"
-SHARE="$RELEASE_DIR/NWCViewer-for-family.zip"
+VERSION=$(/usr/libexec/PlistBuddy -c 'Print :CFBundleShortVersionString' "$APP/Contents/Info.plist")
+SHARE="$RELEASE_DIR/NWCViewer-$VERSION-macOS.zip"
 ditto --norsrc --noextattr -c -k "$STAGING" "$SHARE"
 rm -rf "$STAGING"
 printf '\nReady to share: %s\nTest the signed app on your Mac before sending it.\n' "$SHARE"
