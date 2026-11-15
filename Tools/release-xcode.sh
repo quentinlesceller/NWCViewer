@@ -24,16 +24,8 @@ lipo "$APP/Contents/Helpers/nwc2xml" -verify_arch arm64
 lipo "$APP/Contents/Helpers/nwc2xml" -verify_arch x86_64
 # iCloud Drive may attach Finder metadata after Xcode archives the bundle.
 # Remove only metadata disallowed by codesign; preserve other attributes.
-python3 - "$APP" <<'PYATTR'
-from pathlib import Path
-import os, sys
-root = Path(sys.argv[1])
-for item in [root, *root.rglob('*')]:
-    if item.is_symlink(): continue
-    for name in os.listxattr(item):
-        if name in ('com.apple.FinderInfo', 'com.apple.ResourceFork'):
-            os.removexattr(item, name)
-PYATTR
+xattr -dr com.apple.FinderInfo "$APP" 2>/dev/null || true
+xattr -dr com.apple.ResourceFork "$APP" 2>/dev/null || true
 codesign --force --options runtime --timestamp --sign "$SIGN_IDENTITY" "$APP/Contents/Helpers/nwc2xml"
 codesign --force --options runtime --timestamp --sign "$SIGN_IDENTITY" "$APP"
 python3 - "$RELEASE_DIR/export-options.plist" "$TEAM_ID" <<'PY'
