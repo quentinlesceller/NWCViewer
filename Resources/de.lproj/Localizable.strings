@@ -60,3 +60,28 @@
 "Check for updates automatically" = "Automatisch nach Updates suchen";
 "Download and install updates automatically" = "Updates automatisch laden und installieren";
 "Updates are checked daily and installed when you quit the app. Your scores stay on your Mac." = "Updates werden täglich gesucht und beim Beenden der App installiert. Deine Partituren bleiben auf deinem Mac.";
+
+// Reading, navigation and page layout
+"Open Recent" = "Zuletzt benutzt";
+"Clear Menu" = "Menü löschen";
+"Show Thumbnails" = "Miniaturen einblenden";
+"Go To…" = "Gehe zu…";
+"Previous Page" = "Vorherige Seite";
+"Next Page" = "Nächste Seite";
+"Pages" = "Seiten";
+"Page %ld" = "Seite %ld";
+"Page %ld of %ld" = "Seite %ld von %ld";
+"Destination" = "Ziel";
+"Page" = "Seite";
+"Measure" = "Takt";
+"Page 1–%ld" = "Seite 1–%ld";
+"Enter a measure number shown in the score." = "Gib eine Taktnummer aus der Partitur ein.";
+"Go" = "Öffnen";
+"Page Layout…" = "Seitenlayout…";
+"Orientation" = "Ausrichtung";
+"Portrait" = "Hochformat";
+"Landscape" = "Querformat";
+"Margins" = "Ränder";
+"Note Size" = "Notengröße";
+"Changes apply to the score, printing, and PDF. Paper size: A4." = "Änderungen gelten für die Partitur, den Druck und die PDF-Datei. Papierformat: A4.";
+"Changing note size switches measures per line to Automatic." = "Beim Ändern der Notengröße wird die Anzahl der Takte pro Zeile auf Automatisch gesetzt.";

@@ -8,6 +8,7 @@ struct ScoreWebView: NSViewRepresentable {
     func makeNSView(context: Context) -> WKWebView {
         let config = WKWebViewConfiguration()
         config.websiteDataStore = .nonPersistent()
+        config.userContentController.add(context.coordinator, name: "readingPosition")
         let view = WKWebView(frame: .zero, configuration: config)
         view.navigationDelegate = context.coordinator
         view.allowsMagnification = false
@@ -19,9 +20,12 @@ struct ScoreWebView: NSViewRepresentable {
     }
     func updateNSView(_ nsView: WKWebView, context: Context) {}
     @MainActor
-    final class Coordinator: NSObject, WKNavigationDelegate {
+    final class Coordinator: NSObject, WKNavigationDelegate, WKScriptMessageHandler {
         let model: ViewerModel
         init(model: ViewerModel) { self.model = model }
+        func userContentController(_ userContentController: WKUserContentController, didReceive message: WKScriptMessage) {
+            if let position = message.body as? [String: Any] { model.receivePosition(position) }
+        }
         func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
             webView.callAsyncJavaScript("document.title = title; document.getElementById('score').setAttribute('aria-label', title); document.documentElement.lang = language;",
                 arguments: ["title": NSLocalizedString("Sheet music", comment: "Accessible score label"),

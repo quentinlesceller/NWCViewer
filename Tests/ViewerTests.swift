@@ -16,6 +16,27 @@ final class ViewerTests: XCTestCase {
         try data.write(to: file)
         return file
     }
+    func testReadingHistoryPersistsIndependentScoresAndClears() throws {
+        let suite = "NWCViewerTests.history." + UUID().uuidString
+        let defaults = try XCTUnwrap(UserDefaults(suiteName: suite))
+        defer { defaults.removePersistentDomain(forName: suite) }
+        let first = try temporaryFile(Data("first".utf8))
+        let second = try temporaryFile(Data("second".utf8))
+        let state = ReadingState(voices: ["alto"], zoom: 1.25, fitWidth: false, page: 3, pageOffset: 0.4, measures: 6, layout: PageLayout(landscape: true, marginMM: 20, noteSize: 125))
+        let history = ReadingHistory(defaults: defaults)
+        history.save(url: first, state: state)
+        history.save(url: second, state: ReadingState())
+        let reopened = ReadingHistory(defaults: defaults)
+        XCTAssertEqual(reopened.entries.first?.resolvedURL().resolvingSymlinksInPath(), second.resolvingSymlinksInPath())
+        XCTAssertEqual(reopened.state(for: first), state)
+        XCTAssertEqual(reopened.state(for: second), ReadingState())
+        reopened.save(url: first, state: state)
+        XCTAssertEqual(reopened.entries.count, 2)
+        XCTAssertEqual(reopened.entries.first?.resolvedURL().resolvingSymlinksInPath(), first.resolvingSymlinksInPath())
+        reopened.clear()
+        XCTAssertTrue(ReadingHistory(defaults: defaults).entries.isEmpty)
+    }
+
     func testFrenchLocalizationAndPluralPages() throws {
         let expected = ["de": "Öffnen…", "en": "Open…", "es": "Abrir…", "fr": "Ouvrir…", "it": "Apri…"]
         for (language, label) in expected {
@@ -82,6 +103,77 @@ final class ViewerTests: XCTestCase {
         XCTAssertLessThan(Date().timeIntervalSince(start), 3)
     }
     @MainActor
+    func testModelRestoresVoicesZoomPageAndLayout() async throws {
+        let originalMeasures = UserDefaults.standard.object(forKey: "measuresPerLine")
+        defer { UserDefaults.standard.set(originalMeasures, forKey: "measuresPerLine") }
+        let suite = "NWCViewerTests.model." + UUID().uuidString
+        let defaults = try XCTUnwrap(UserDefaults(suiteName: suite))
+        defer { defaults.removePersistentDomain(forName: suite) }
+        let file = try temporaryFile(Data(contentsOf: fixture("Flee")))
+        let history = ReadingHistory(defaults: defaults)
+        let model = ViewerModel(history: history)
+        let loaded = expectation(description: "Renderer ready")
+        let delegate = NavigationWaiter(loaded)
+        let view = WKWebView(frame: NSRect(x: 0, y: 0, width: 900, height: 500))
+        let window = NSWindow(contentRect: view.frame, styleMask: [.titled], backing: .buffered, defer: false)
+        window.contentView = view; window.orderFront(nil)
+        defer { window.orderOut(nil) }
+        view.navigationDelegate = delegate
+        model.webView = view
+        let page = try XCTUnwrap(Bundle.main.url(forResource: "index", withExtension: "html", subdirectory: "Web"))
+        view.loadFileURL(page, allowingReadAccessTo: page.deletingLastPathComponent())
+        await fulfillment(of: [loaded], timeout: 15)
+        model.pageLoaded(); model.open(file)
+        try await waitUntilReady(model)
+        let voice = try XCTUnwrap(model.parts.first?.id)
+        model.setVisibleParts([voice]); try await waitUntilReady(model)
+        model.setMeasuresPerLine(2); try await waitUntilReady(model)
+        model.setZoom(1.5)
+        let target = min(2, model.pageCount)
+        model.goToPage(target)
+        try await Task.sleep(nanoseconds: 200_000_000)
+        let rawPosition = try await view.evaluateJavaScript("viewer.position()")
+        let position = try XCTUnwrap(rawPosition as? [String: Any])
+        model.receivePosition(position)
+        model.setZoom(1.0)
+        model.setZoom(1.5)
+        try await Task.sleep(nanoseconds: 100_000_000)
+        let zoomedPosition = try await view.evaluateJavaScript("viewer.position()") as? [String: Any]
+        XCTAssertEqual(zoomedPosition?["page"] as? Int, target)
+        let saved = try XCTUnwrap(history.state(for: file))
+        XCTAssertEqual(saved.zoom, 1.5)
+        XCTAssertFalse(saved.fitWidth)
+        XCTAssertEqual(saved.page, target)
+        if model.parts.count > 1 { XCTAssertEqual(saved.voices, [voice]) }
+        model.showingSidebar = true; model.prepareThumbnails()
+        for _ in 0..<200 where model.preparingThumbnails { try await Task.sleep(nanoseconds: 20_000_000) }
+        XCTAssertEqual(model.thumbnailDocument?.pageCount, model.pageCount)
+        let savedZoom = try await view.evaluateJavaScript("document.getElementById('score').style.zoom") as? String
+        XCTAssertEqual(savedZoom, "1.5")
+        let reopened = ViewerModel(history: ReadingHistory(defaults: defaults))
+        reopened.webView = view; reopened.pageLoaded()
+        try await waitUntilReady(reopened)
+        try await Task.sleep(nanoseconds: 200_000_000)
+        XCTAssertEqual(reopened.selectedPartIDs, [voice])
+        XCTAssertEqual(reopened.zoom, 1.5)
+        XCTAssertEqual(reopened.currentPage, target)
+        XCTAssertEqual(reopened.measuresPerLine, 2)
+        let rawRestored = try await view.evaluateJavaScript("viewer.position()")
+        let restored = try XCTUnwrap(rawRestored as? [String: Any])
+        XCTAssertEqual(restored["page"] as? Int, target)
+        XCTAssertEqual(restored["offset"] as? Double ?? -1, saved.pageOffset, accuracy: 0.02)
+    }
+    @MainActor
+    private func waitUntilReady(_ model: ViewerModel) async throws {
+        for _ in 0..<500 {
+            if model.ready { return }
+            if let error = model.error { XCTFail(error); return }
+            try await Task.sleep(nanoseconds: 20_000_000)
+        }
+        XCTFail("Score did not become ready")
+    }
+
+    @MainActor
     func testBundledRendererInWebKit() async throws {
         let loaded = expectation(description: "Local WebKit renderer loaded")
         let delegate = NavigationWaiter(loaded)
@@ -105,7 +197,7 @@ final class ViewerTests: XCTestCase {
         for scale in [0.5, 1.0, 2.0] {
             _ = try await view.callAsyncJavaScript("window.viewer.zoom(value)", arguments: ["value": scale], in: nil, contentWorld: .page)
             let pdf = try await ScorePDF.make(from: view)
-            XCTAssertEqual(pdf.pageCount, 2)
+            XCTAssertEqual(pdf.pageCount, pages)
             for index in 0..<pdf.pageCount {
                 let page = try XCTUnwrap(pdf.page(at: index))
                 XCTAssertEqual(page.bounds(for: .mediaBox).width, 595.2756, accuracy: 0.1)
@@ -138,6 +230,24 @@ final class ViewerTests: XCTestCase {
         XCTAssertTrue(text.contains("AltoTest"))
         XCTAssertFalse(text.contains("SopranoTest"))
         XCTAssertFalse(text.contains("BassTest"))
+
+        // Navigation and layout must refer to the actual printed score.
+        let landscapeInfo = try await view.callAsyncJavaScript("return await viewer.configure(0, ['alto'], { landscape: true, marginMM: 25, noteSize: 150 })", arguments: [:], in: nil, contentWorld: .page) as? [String: Any]
+        XCTAssertEqual(landscapeInfo?["notationScale"] as? Double, 1.5)
+        let navigation = try XCTUnwrap(landscapeInfo?["navigation"] as? [[String: Any]])
+        XCTAssertEqual(navigation.compactMap { $0["number"] as? Int }, [1, 2, 3, 4])
+        let jumped = try await view.evaluateJavaScript("viewer.goToMeasure(3)") as? Bool
+        XCTAssertEqual(jumped, true)
+        let missing = try await view.evaluateJavaScript("viewer.goToMeasure(999)") as? Bool
+        XCTAssertEqual(missing, false)
+        let landscapePDF = try await ScorePDF.make(from: view, landscape: true)
+        let landscapePage = try XCTUnwrap(landscapePDF.page(at: 0))
+        XCTAssertEqual(landscapePage.bounds(for: .mediaBox).width, 841.8898, accuracy: 0.1)
+        XCTAssertEqual(landscapePage.bounds(for: .mediaBox).height, 595.2756, accuracy: 0.1)
+        XCTAssertTrue(landscapePDF.string?.contains("AltoTest") == true)
+        XCTAssertFalse(landscapePDF.string?.contains("SopranoTest") == true)
+        let changedFile = try await view.callAsyncJavaScript("return await viewer.load(xml, 4, ['deleted-voice'])", arguments: ["xml": voicesXML], in: nil, contentWorld: .page) as? [String: Any]
+        XCTAssertEqual(changedFile?["renderedPartCount"] as? Int, 3)
 
     }
 }

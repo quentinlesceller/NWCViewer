@@ -6,10 +6,12 @@ import PDFKit
 enum ScorePDF {
     /// Capture each rendered SVG separately: WKWebView's printOperation can
     /// produce blank/doubled pages on macOS. This also decouples PDF from zoom.
-    static func make(from webView: WKWebView) async throws -> PDFDocument {
+    static func make(from webView: WKWebView, landscape: Bool = false) async throws -> PDFDocument {
+        let position = try await webView.evaluateJavaScript("viewer.position()") as? [String: Any] ?? [:]
+        _ = try await webView.evaluateJavaScript("viewer.suspendPosition(true)")
         let previous = try await webView.evaluateJavaScript("document.getElementById('score').style.zoom") as? String ?? "1"
         defer {
-            webView.callAsyncJavaScript("document.getElementById('score').style.zoom = value;", arguments: ["value": previous], in: nil, in: .page, completionHandler: nil)
+            webView.callAsyncJavaScript("document.getElementById('score').style.zoom = value; viewer.goToPage(page, offset); viewer.suspendPosition(false);", arguments: ["value": previous, "page": position["page"] ?? 1, "offset": position["offset"] ?? 0], in: nil, in: .page, completionHandler: nil)
         }
         let rawRectangles = try await webView.callAsyncJavaScript("""
             document.getElementById('score').style.zoom = '1';
@@ -22,7 +24,7 @@ enum ScorePDF {
         guard let rectangles, !rectangles.isEmpty else { throw ViewerError.message("There are no score pages to export.") }
         let data = NSMutableData()
         guard let consumer = CGDataConsumer(data: data) else { throw ViewerError.message("Unable to create PDF.") }
-        var a4 = CGRect(x: 0, y: 0, width: 595.2756, height: 841.8898)
+        var a4 = CGRect(x: 0, y: 0, width: landscape ? 841.8898 : 595.2756, height: landscape ? 595.2756 : 841.8898)
         guard let context = CGContext(consumer: consumer, mediaBox: &a4, nil) else { throw ViewerError.message("Unable to create PDF.") }
         for r in rectangles {
             let configuration = WKPDFConfiguration()

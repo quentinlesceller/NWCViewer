@@ -60,3 +60,28 @@
 "Check for updates automatically" = "Verifica automaticamente gli aggiornamenti";
 "Download and install updates automatically" = "Scarica e installa automaticamente gli aggiornamenti";
 "Updates are checked daily and installed when you quit the app. Your scores stay on your Mac." = "Gli aggiornamenti vengono verificati ogni giorno e installati quando esci dall’app. Gli spartiti rimangono sul tuo Mac.";
+
+// Reading, navigation and page layout
+"Open Recent" = "Apri recenti";
+"Clear Menu" = "Cancella menu";
+"Show Thumbnails" = "Mostra miniature";
+"Go To…" = "Vai a…";
+"Previous Page" = "Pagina precedente";
+"Next Page" = "Pagina successiva";
+"Pages" = "Pagine";
+"Page %ld" = "Pagina %ld";
+"Page %ld of %ld" = "Pagina %ld di %ld";
+"Destination" = "Destinazione";
+"Page" = "Pagina";
+"Measure" = "Battuta";
+"Page 1–%ld" = "Pagina 1–%ld";
+"Enter a measure number shown in the score." = "Inserisci un numero di battuta dello spartito.";
+"Go" = "Vai";
+"Page Layout…" = "Impostazione pagina…";
+"Orientation" = "Orientamento";
+"Portrait" = "Verticale";
+"Landscape" = "Orizzontale";
+"Margins" = "Margini";
+"Note Size" = "Dimensione delle note";
+"Changes apply to the score, printing, and PDF. Paper size: A4." = "Le modifiche si applicano allo spartito, alla stampa e al PDF. Formato carta: A4.";
+"Changing note size switches measures per line to Automatic." = "Modificando la dimensione delle note, il numero di battute per riga passa ad Automatico.";

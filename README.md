@@ -4,7 +4,7 @@ A small native macOS app for opening **binary NoteWorthy Composer `.nwc` files**
 
 ## Download for Mac
 
-[Download NWC Viewer](https://github.com/quentinlesceller/NWCViewer/releases/download/v1.6/NWCViewer-1.6-macOS.zip)
+[Download NWC Viewer](https://github.com/quentinlesceller/NWCViewer/releases/download/v1.7/NWCViewer-1.7-macOS.zip)
 
 Requires macOS 13 or later; supports Intel and Apple silicon. Unzip the download,
 drag **NWC Viewer.app** into Applications, then open it. The release is Developer
@@ -19,11 +19,31 @@ Starting with 1.6, Sparkle checks daily, downloads signed updates, and installs 
 
 1. Launch **NWC Viewer** and click **Open NWC File…** (or press Command–O).
 2. Choose the original `.nwc` file. Scroll normally with a mouse or trackpad.
-3. Use the magnifying-glass buttons to zoom from 50% to 200%; use the percentage menu to choose Actual Size (100%).
+3. Use the magnifying-glass buttons to zoom from 25% to 200%; use the percentage menu to choose Actual Size (100%).
 4. Click **Print…** (Command–P) for the macOS print dialog, or **Save PDF…** (Shift–Command–S) to save a PDF.
 5. Use **Fit Width** to fit a page to your window. You can also drag an `.nwc` file onto the app. The title area shows the page count. The compact toolbar follows macOS conventions; hover over an icon for its label, or use the File and View menus. Click the zoom percentage to choose a preset or Actual Size.
 
-Printing and PDF export capture each rendered score page into a vector PDF with A4 portrait pages, independent of viewing zoom. Printing uses the same PDF as saving. The print dialog can select another printer/paper size and scaling. For best results use A4, 100% scaling. Files associated with the app can also be opened from Finder / Open With. This is a viewer: it does not edit, play, or save NWC scores.
+Printing and PDF export capture each rendered score page into a vector PDF with A4 pages in the selected orientation, independent of viewing zoom. Printing uses the same PDF as saving. The print dialog can select another printer/paper size and scaling. For best results use A4, 100% scaling. Files associated with the app can also be opened from Finder / Open With. This is a viewer: it does not edit, play, or save NWC scores.
+
+## Reading and navigation
+
+The last available score reopens at launch. Each of the 20 recent files remembers
+its visible voices, zoom (or Fit Width), page and scroll position, measures per line,
+and page layout. These preferences and file bookmarks stay in macOS UserDefaults;
+no score contents are stored or uploaded. Missing files remain in Open Recent so
+you can locate the original; clearing that menu also clears saved reading history.
+
+Use **File → Open Recent** to return to a score. The sidebar button shows page
+thumbnails generated from the same vector PDF used for printing, only when needed.
+**View → Go To…** (Command–L) jumps to a page or a measure number shown in the score.
+Command–Up/Down moves to the previous/next page. The title bar shows the current page.
+
+**File → Page Layout…**, also available from the layout toolbar menu, offers A4
+portrait/landscape, 10–25 mm margins and 75–150% note sizes. Changing note size
+switches measures per line to Automatic, allowing the music to reflow. Selecting
+an explicit measure count may shrink notes to fit that count. Screen, print and
+PDF use the same pagination and selected voices; screen zoom never changes print
+size. PDF filenames include the selected part names when only some voices are shown.
 
 ## Languages
 

@@ -60,3 +60,28 @@
 "Check for updates automatically" = "Rechercher automatiquement les mises à jour";
 "Download and install updates automatically" = "Télécharger et installer automatiquement les mises à jour";
 "Updates are checked daily and installed when you quit the app. Your scores stay on your Mac." = "Les mises à jour sont recherchées chaque jour et installées à la fermeture de l’app. Vos partitions restent sur votre Mac.";
+
+// Reading, navigation and page layout
+"Open Recent" = "Ouvrir un fichier récent";
+"Clear Menu" = "Effacer le menu";
+"Show Thumbnails" = "Afficher les miniatures";
+"Go To…" = "Aller à…";
+"Previous Page" = "Page précédente";
+"Next Page" = "Page suivante";
+"Pages" = "Pages";
+"Page %ld" = "Page %ld";
+"Page %ld of %ld" = "Page %ld sur %ld";
+"Destination" = "Destination";
+"Page" = "Page";
+"Measure" = "Mesure";
+"Page 1–%ld" = "Page 1–%ld";
+"Enter a measure number shown in the score." = "Saisissez un numéro de mesure de la partition.";
+"Go" = "Aller";
+"Page Layout…" = "Mise en page…";
+"Orientation" = "Orientation";
+"Portrait" = "Portrait";
+"Landscape" = "Paysage";
+"Margins" = "Marges";
+"Note Size" = "Taille des notes";
+"Changes apply to the score, printing, and PDF. Paper size: A4." = "Ces réglages s’appliquent à la partition, à l’impression et au PDF. Format du papier : A4.";
+"Changing note size switches measures per line to Automatic." = "Modifier la taille des notes passe le nombre de mesures par ligne en mode Automatique.";

@@ -18,20 +18,30 @@ struct NWCViewerApp: App {
                 Button("Check for Updates…", action: updater.checkForUpdates).disabled(!updater.canCheckForUpdates)
             }
             CommandGroup(replacing: .newItem) {
-                Button("Open…", action: model.chooseFile).keyboardShortcut("o").disabled(model.busy || model.exporting)
+                Button("Open…", action: model.chooseFile).keyboardShortcut("o").disabled(model.busy || model.exporting || model.preparingThumbnails)
+                Menu("Open Recent") {
+                    ForEach(model.recentScores) { recent in Button(recent.name) { model.open(recent.resolvedURL()) } }
+                    Divider()
+                    Button("Clear Menu", action: model.clearRecentFiles)
+                }.disabled(model.recentScores.isEmpty || model.busy || model.exporting || model.preparingThumbnails)
             }
             CommandGroup(replacing: .printItem) {
+                Button("Page Layout…") { model.showingLayout = true }.disabled(!model.ready || model.exporting || model.preparingThumbnails)
                 Button("Print…") { model.printScore(export: false) }
-                    .keyboardShortcut("p").disabled(!model.ready || model.exporting)
+                    .keyboardShortcut("p").disabled(!model.ready || model.exporting || model.preparingThumbnails)
                 Button("Save PDF…") { model.printScore(export: true) }
-                    .keyboardShortcut("s", modifiers: [.command, .shift]).disabled(!model.ready || model.exporting)
+                    .keyboardShortcut("s", modifiers: [.command, .shift]).disabled(!model.ready || model.exporting || model.preparingThumbnails)
             }
             CommandGroup(after: .toolbar) {
-                Button("Zoom In") { model.changeZoom(0.1) }.keyboardShortcut("+").disabled(!model.ready || model.exporting)
-                Button("Zoom Out") { model.changeZoom(-0.1) }.keyboardShortcut("-").disabled(!model.ready || model.exporting)
-                Button("Actual Size") { model.setZoom(1) }.keyboardShortcut("0").disabled(!model.ready || model.exporting)
-                Button("Fit Width", action: model.fitWidth).disabled(!model.ready || model.exporting)
-                MeasuresPerLinePicker(model: model).disabled(!model.ready || model.exporting)
+                Toggle("Show Thumbnails", isOn: $model.showingSidebar)
+                Button("Go To…") { model.showingLocation = true }.keyboardShortcut("l").disabled(!model.ready || model.exporting || model.preparingThumbnails)
+                Button("Previous Page") { model.goToPage(model.currentPage - 1) }.keyboardShortcut(.upArrow, modifiers: [.command]).disabled(!model.ready || model.currentPage <= 1)
+                Button("Next Page") { model.goToPage(model.currentPage + 1) }.keyboardShortcut(.downArrow, modifiers: [.command]).disabled(!model.ready || model.currentPage >= model.pageCount)
+                Button("Zoom In") { model.changeZoom(0.1) }.keyboardShortcut("+").disabled(!model.ready || model.exporting || model.preparingThumbnails)
+                Button("Zoom Out") { model.changeZoom(-0.1) }.keyboardShortcut("-").disabled(!model.ready || model.exporting || model.preparingThumbnails)
+                Button("Actual Size") { model.setZoom(1) }.keyboardShortcut("0").disabled(!model.ready || model.exporting || model.preparingThumbnails)
+                Button("Fit Width", action: model.fitWidth).disabled(!model.ready || model.exporting || model.preparingThumbnails)
+                MeasuresPerLinePicker(model: model).disabled(!model.ready || model.exporting || model.preparingThumbnails)
             }
         }
         Settings { UpdateSettings(updater: updater) }
@@ -43,9 +53,13 @@ struct ContentView: View {
     @State private var dropTarget = false
     @State private var showingVoices = false
     var body: some View {
-        VStack(spacing: 0) {
+        HStack(spacing: 0) {
+            if model.showingSidebar { ScoreSidebar(model: model); Divider() }
+            VStack(spacing: 0) {
             ZStack {
-                ScoreWebView(model: model)
+                GeometryReader { geometry in
+                    ScoreWebView(model: model).onChange(of: geometry.size.width) { _ in model.resizeToFit() }
+                }
                     .opacity(model.hasScore && !model.busy ? 1 : 0)
                     .accessibilityHidden(!model.hasScore || model.busy)
                 if model.busy {
@@ -74,6 +88,10 @@ struct ContentView: View {
                 if dropTarget { RoundedRectangle(cornerRadius: 12).stroke(Color.accentColor, lineWidth: 3).padding(8).allowsHitTesting(false) }
             }
         }
+        }
+        .onReceive(NotificationCenter.default.publisher(for: NSApplication.willTerminateNotification)) { _ in model.saveReading() }
+        .sheet(isPresented: $model.showingLocation) { ScoreLocationSheet(model: model) }
+        .sheet(isPresented: $model.showingLayout) { ScoreLayoutSheet(model: model) }
         .dropDestination(for: URL.self) { urls, _ in
             guard let url = urls.first, !model.busy else { return false }
             model.open(url); return true
@@ -81,20 +99,28 @@ struct ContentView: View {
         .navigationTitle(model.title)
         .navigationSubtitle(model.exporting
             ? NSLocalizedString("Preparing PDF…", comment: "Export status")
-            : model.hasScore ? String.localizedStringWithFormat(NSLocalizedString("page_count", comment: "Page count"), model.pageCount) : "")
+            : model.hasScore ? String.localizedStringWithFormat(NSLocalizedString("Page %ld of %ld", comment: "Current page"), model.currentPage, model.pageCount) : "")
         .toolbar {
             ToolbarItem(placement: .navigation) {
+                Button { model.showingSidebar.toggle() } label: { Label("Show Thumbnails", systemImage: "sidebar.left") }
+                    .labelStyle(.iconOnly).help("Show Thumbnails")
+            }
+            ToolbarItem(placement: .automatic) {
+                Button { model.showingLocation = true } label: { Label("Go To…", systemImage: "arrow.right.doc.on.clipboard") }
+                    .labelStyle(.iconOnly).help("Go To…").disabled(!model.ready || model.exporting || model.preparingThumbnails)
+            }
+            ToolbarItem(placement: .navigation) {
                 Button(action: model.chooseFile) { Label("Open…", systemImage: "folder") }
-                    .labelStyle(.iconOnly).help("Open NWC File…").disabled(model.busy || model.exporting)
+                    .labelStyle(.iconOnly).help("Open NWC File…").disabled(model.busy || model.exporting || model.preparingThumbnails)
             }
             ToolbarItemGroup(placement: .principal) {
                 Button { model.changeZoom(-0.1) } label: { Label("Zoom Out", systemImage: "minus.magnifyingglass") }
-                    .labelStyle(.iconOnly).help("Zoom out").disabled(!model.ready || model.exporting || model.zoom <= 0.5)
+                    .labelStyle(.iconOnly).help("Zoom out").disabled(!model.ready || model.exporting || model.zoom <= 0.25)
                 Menu {
                     Button("Fit Width", action: model.fitWidth)
                     Button("Actual Size") { model.setZoom(1) }
                     Divider()
-                    ForEach([50, 75, 100, 125, 150, 200], id: \.self) { percent in
+                    ForEach([25, 50, 75, 100, 125, 150, 200], id: \.self) { percent in
                         Button { model.setZoom(Double(percent) / 100) } label: { Text(verbatim: "\(percent)%") }
                     }
                 } label: {
@@ -102,36 +128,37 @@ struct ContentView: View {
                         .monospacedDigit().frame(minWidth: 40)
                 }
                 .menuStyle(.borderlessButton).fixedSize().help("Zoom")
-                .disabled(!model.ready || model.exporting)
+                .disabled(!model.ready || model.exporting || model.preparingThumbnails)
                 Button { model.changeZoom(0.1) } label: { Label("Zoom In", systemImage: "plus.magnifyingglass") }
                     .labelStyle(.iconOnly).help("Zoom in").disabled(!model.ready || model.exporting || model.zoom >= 2)
                 Button(action: model.fitWidth) { Label("Fit Width", systemImage: "arrow.left.and.right.righttriangle.left.righttriangle.right") }
-                    .labelStyle(.iconOnly).help("Fit the page to the window").disabled(!model.ready || model.exporting)
+                    .labelStyle(.iconOnly).help("Fit the page to the window").disabled(!model.ready || model.exporting || model.preparingThumbnails)
             }
             ToolbarItem(placement: .automatic) {
                 Button { showingVoices = true } label: { Label("Voices", systemImage: "person.3") }
                     .labelStyle(.iconOnly).help("Choose voices")
-                    .disabled(!model.ready || model.exporting)
+                    .disabled(!model.ready || model.exporting || model.preparingThumbnails)
                     .popover(isPresented: $showingVoices) {
                         VoicesPicker(model: model) { showingVoices = false }
                     }
             }
             ToolbarItem(placement: .automatic) {
                 Menu {
+                    Button("Page Layout…") { model.showingLayout = true }
                     MeasuresPerLinePicker(model: model)
                     Divider()
                     Text("More measures makes the notation smaller.")
                 } label: {
-                    Label("Measures per line", systemImage: "rectangle.split.3x1")
+                    Label("Page Layout…", systemImage: "rectangle.split.3x1")
                 }
-                .labelStyle(.iconOnly).help("Measures per line")
-                .disabled(!model.ready || model.exporting)
+                .labelStyle(.iconOnly).help("Page Layout…")
+                .disabled(!model.ready || model.exporting || model.preparingThumbnails)
             }
             ToolbarItemGroup(placement: .automatic) {
                 Button { model.printScore(export: false) } label: { Label("Print…", systemImage: "printer") }
-                    .labelStyle(.iconOnly).help("Print…").disabled(!model.ready || model.exporting)
+                    .labelStyle(.iconOnly).help("Print…").disabled(!model.ready || model.exporting || model.preparingThumbnails)
                 Button { model.printScore(export: true) } label: { Label("Save PDF…", systemImage: "arrow.down.document") }
-                    .labelStyle(.iconOnly).help("Save PDF…").disabled(!model.ready || model.exporting)
+                    .labelStyle(.iconOnly).help("Save PDF…").disabled(!model.ready || model.exporting || model.preparingThumbnails)
             }
         }
         .alert("Unable to open or export score", isPresented: Binding(get: { model.error != nil }, set: { if !$0 { model.error = nil } })) {

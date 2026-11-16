@@ -60,3 +60,28 @@
 "Check for updates automatically" = "Check for updates automatically";
 "Download and install updates automatically" = "Download and install updates automatically";
 "Updates are checked daily and installed when you quit the app. Your scores stay on your Mac." = "Updates are checked daily and installed when you quit the app. Your scores stay on your Mac.";
+
+// Reading, navigation and page layout
+"Open Recent" = "Open Recent";
+"Clear Menu" = "Clear Menu";
+"Show Thumbnails" = "Show Thumbnails";
+"Go To…" = "Go To…";
+"Previous Page" = "Previous Page";
+"Next Page" = "Next Page";
+"Pages" = "Pages";
+"Page %ld" = "Page %ld";
+"Page %ld of %ld" = "Page %ld of %ld";
+"Destination" = "Destination";
+"Page" = "Page";
+"Measure" = "Measure";
+"Page 1–%ld" = "Page 1–%ld";
+"Enter a measure number shown in the score." = "Enter a measure number in the score.";
+"Go" = "Go";
+"Page Layout…" = "Page Layout…";
+"Orientation" = "Orientation";
+"Portrait" = "Portrait";
+"Landscape" = "Landscape";
+"Margins" = "Margins";
+"Note Size" = "Note Size";
+"Changes apply to the score, printing, and PDF. Paper size: A4." = "Changes apply to the score, printing, and PDF. Paper size: A4.";
+"Changing note size switches measures per line to Automatic." = "Changing note size switches measures per line to Automatic.";
