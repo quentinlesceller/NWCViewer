@@ -6,6 +6,15 @@ IMPORTANT: This file was signed by Sparkle. Any modifications to this file requi
     <channel>
         <title>NWC Viewer</title>
         <item>
+            <title>1.8</title>
+            <pubDate>Thu, 26 Nov 2026 10:23:01 -0500</pubDate>
+            <link>https://github.com/quentinlesceller/NWCViewer/releases</link>
+            <sparkle:version>9</sparkle:version>
+            <sparkle:shortVersionString>1.8</sparkle:shortVersionString>
+            <sparkle:minimumSystemVersion>13.0</sparkle:minimumSystemVersion>
+            <enclosure url="https://github.com/quentinlesceller/NWCViewer/releases/download/v1.8/NWCViewer-1.8-update.zip" length="2717201" type="application/octet-stream" sparkle:edSignature="qYWg8H5kAOpM19EjpSEczmXb/W6XLUEuUDZi+GjE500xeFtP/R7Ec0ttsF/afhD/5/vcLtwROhN7M6lEpJHCDg=="/>
+        </item>
+        <item>
             <title>1.7</title>
             <pubDate>Sun, 15 Nov 2026 20:20:44 -0500</pubDate>
             <link>https://github.com/quentinlesceller/NWCViewer/releases</link>
@@ -26,6 +35,6 @@ IMPORTANT: This file was signed by Sparkle. Any modifications to this file requi
     </channel>
 </rss>
 <!-- sparkle-signatures:
-edSignature: ko2x+rJSLtTp3thaywdBOeTIsbwq8+xOFMG9L0Mj+UUSNH9Yp3PtGaWnEppPm7QEF5tG0nwKP/NyTuWtJ7P/AA==
-length: 1814
+edSignature: HNyTim6FyBR4MvJe/RrL5OJ24O3ZEjFEIG43ipkj7ydKQjBybC6bGOQC1kEdbGdcfnguM+GYiZxQCUlEHlbmBg==
+length: 2504
 -->
