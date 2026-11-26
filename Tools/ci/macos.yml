@@ -13,5 +13,5 @@ jobs:
         run: Tools/test-macos.sh
       - name: Test standalone converter
         run: |
-          make -C Vendor/nwc2xml
+          make -C Converter
           python3 Tools/test_converter.py

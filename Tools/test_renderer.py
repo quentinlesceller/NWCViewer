@@ -73,7 +73,7 @@ class RendererTests(unittest.TestCase):
                 for fixture in sorted((ROOT/'Tests/Fixtures').glob('*.nwc')):
                     score = Path(d)/fixture.name
                     score.write_bytes(fixture.read_bytes())
-                    subprocess.run([str(ROOT/'Vendor/nwc2xml/nwc2xml'), str(score)], check=True, capture_output=True, timeout=20)
+                    subprocess.run([str(ROOT/'Converter/score-reader'), str(score)], check=True, capture_output=True, timeout=20)
                     page.evaluate('(xml)=>window.viewer.load(xml)', score.with_suffix('.xml').read_text())
                     # A fixed count must reflow music, not merely cap the old layout.
                     for count in [2, 3, 4, 6, 8, 0]:

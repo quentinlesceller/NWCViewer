@@ -20,8 +20,8 @@ def phase(key, isa, files, **kw):
     return add(key, isa, buildActionMask=2147483647, files=files, runOnlyForDeploymentPostprocessing=0, **kw)
 
 apps = [file(str(p.relative_to(ROOT)), 'sourcecode.swift') for p in sorted((ROOT/'App').glob('*.swift'))]
-cpp = [file('Vendor/nwc2xml/'+n+'.cpp','sourcecode.cpp.cpp') for n in ['nwc2xml','nwcfile','nwcobj','xmlsaver','xmlwriter','wxshim']]
-cpp.append(file('Converter/ModernNWC.cpp', 'sourcecode.cpp.cpp'))
+reader_sources = [file('Converter/'+name+'.cpp', 'sourcecode.cpp.cpp') for name in ['ScoreReader', 'LegacyScore']]
+cpp = reader_sources + [file('Converter/main.cpp', 'sourcecode.cpp.cpp')]
 icon = file('Resources/AppIcon.icns', 'image.icns')
 web = file('Resources/Web', 'folder')
 licenses = file('Resources/Licenses', 'folder')
@@ -33,7 +33,7 @@ for filename in ['Localizable.strings', 'Localizable.stringsdict']:
 fixtures = file('Tests/Fixtures', 'folder')
 test = file('Tests/ViewerTests.swift', 'sourcecode.swift')
 app_product = add('appProduct','PBXFileReference', explicitFileType='wrapper.application', path='NWC Viewer.app', sourceTree='BUILT_PRODUCTS_DIR')
-helper_product = add('helperProduct','PBXFileReference', explicitFileType='compiled.mach-o.executable', path='nwc2xml', sourceTree='BUILT_PRODUCTS_DIR')
+helper_product = add('helperProduct','PBXFileReference', explicitFileType='compiled.mach-o.executable', path='score-reader', sourceTree='BUILT_PRODUCTS_DIR')
 test_product = add('testProduct','PBXFileReference', explicitFileType='wrapper.cfbundle', path='NWCViewerTests.xctest', sourceTree='BUILT_PRODUCTS_DIR')
 products = add('products','PBXGroup', children=[app_product,helper_product,test_product], name='Products',sourceTree='<group>')
 main = add('main','PBXGroup', children=apps+cpp+localized+[icon,web,licenses,test,fixtures,products], sourceTree='<group>')
@@ -57,20 +57,19 @@ sparkle_product = add('sparkleProduct', 'XCSwiftPackageProductDependency', packa
 sparkle_link = add('sparkleLink', 'PBXBuildFile', productRef=sparkle_product)
 
 helper_phases=[phase('helperSources','PBXSourcesBuildPhase',[build('cpp'+str(i),f) for i,f in enumerate(cpp)]),phase('helperFrameworks','PBXFrameworksBuildPhase',[])]
-add('helper','PBXNativeTarget', name='nwc2xml', productName='nwc2xml', productReference=helper_product, productType='com.apple.product-type.tool', buildConfigurationList=configs('helper',dict(PRODUCT_NAME='nwc2xml',SKIP_INSTALL='YES',OTHER_LDFLAGS=['-lz','-liconv'],GCC_WARN_INHIBIT_ALL_WARNINGS='YES')), buildPhases=helper_phases, buildRules=[], dependencies=[])
+add('helper','PBXNativeTarget', name='score-reader', productName='score-reader', productReference=helper_product, productType='com.apple.product-type.tool', buildConfigurationList=configs('helper',dict(PRODUCT_NAME='score-reader',SKIP_INSTALL='YES',OTHER_LDFLAGS=['-lz'],GCC_WARN_INHIBIT_ALL_WARNINGS='YES')), buildPhases=helper_phases, buildRules=[], dependencies=[])
 copy=phase('copyHelper','PBXCopyFilesBuildPhase',[build('helperCopy',helper_product,settings={'ATTRIBUTES':['CodeSignOnCopy']})],dstPath='Contents/Helpers', dstSubfolderSpec=1, name='Embed converter')
 app_phases=[phase('appSources','PBXSourcesBuildPhase',[build('swift'+str(i),f) for i,f in enumerate(apps)]),phase('appResources','PBXResourcesBuildPhase',[build('icon',icon),build('web',web),build('licenses',licenses)]+[build('localized:'+str(i),f) for i,f in enumerate(localized)]),phase('appFrameworks','PBXFrameworksBuildPhase',[sparkle_link]),copy]
 add('app','PBXNativeTarget', name='NWCViewer', productName='NWC Viewer', productReference=app_product, productType='com.apple.product-type.application', buildConfigurationList=configs('app',dict(PRODUCT_NAME='NWC Viewer',PRODUCT_MODULE_NAME='NWCViewer',PRODUCT_BUNDLE_IDENTIFIER='com.quentinlesceller.nwcviewer',INFOPLIST_FILE='Resources/Info.plist',ENABLE_APP_SANDBOX='NO',LD_RUNPATH_SEARCH_PATHS=['$(inherited)','@executable_path/../Frameworks'])), packageProductDependencies=[sparkle_product], buildPhases=app_phases, buildRules=[], dependencies=[dependency('apphelper','helper')])
 test_phases=[phase('testSources','PBXSourcesBuildPhase',[build('test',test)]),phase('testResources','PBXResourcesBuildPhase',[build('fixtures',fixtures)]),phase('testFrameworks','PBXFrameworksBuildPhase',[])]
 add('tests','PBXNativeTarget',name='NWCViewerTests',productName='NWCViewerTests',productReference=test_product,productType='com.apple.product-type.bundle.unit-test',buildConfigurationList=configs('tests',dict(PRODUCT_NAME='NWCViewerTests',PRODUCT_BUNDLE_IDENTIFIER='org.example.NWCViewerTests',GENERATE_INFOPLIST_FILE='YES',TEST_HOST='$(BUILT_PRODUCTS_DIR)/NWC Viewer.app/Contents/MacOS/NWC Viewer',BUNDLE_LOADER='$(TEST_HOST)',LD_RUNPATH_SEARCH_PATHS=['$(inherited)','@executable_path/../Frameworks','@loader_path/../Frameworks'])),buildPhases=test_phases,buildRules=[],dependencies=[dependency('testsapp','app')])
 pad_product = add('padProduct','PBXFileReference',explicitFileType='wrapper.application',path='NWCViewerPad.app',sourceTree='BUILT_PRODUCTS_DIR')
-pad_sources = [file('iPad/Reader.swift','sourcecode.swift'), file('iPad/Bridge.cpp','sourcecode.cpp.cpp')]
+pad_sources = [file('iPad/Reader.swift','sourcecode.swift')]
 objects[products]['children'].append(pad_product)
 objects[main]['children'].extend(pad_sources)
-pad_sources_phase = phase('padSources','PBXSourcesBuildPhase',[build('padSource'+str(i),f) for i,f in enumerate(pad_sources+cpp+[ref('App/ScorePDF.swift')])])
-objects[ref('build:padSource2')]['settings'] = {'COMPILER_FLAGS':'-Dmain=nwc_cli_main'}
+pad_sources_phase = phase('padSources','PBXSourcesBuildPhase',[build('padSource'+str(i),f) for i,f in enumerate(pad_sources+reader_sources+[ref('App/ScorePDF.swift')])])
 pad_resources = phase('padResources','PBXResourcesBuildPhase',[build('padResource'+str(i),f) for i,f in enumerate([web,licenses,file('iPad/Assets.xcassets','folder.assetcatalog')]+localized)])
-pad_settings = dict(ASSETCATALOG_COMPILER_APPICON_NAME='AppIcon',SDKROOT='iphoneos',SUPPORTED_PLATFORMS='iphoneos iphonesimulator',TARGETED_DEVICE_FAMILY='2',IPHONEOS_DEPLOYMENT_TARGET='16.0',PRODUCT_NAME='NWCViewerPad',PRODUCT_BUNDLE_IDENTIFIER='com.quentinlesceller.nwcviewer.ipad',INFOPLIST_FILE='iPad/Info.plist',SWIFT_OBJC_BRIDGING_HEADER='iPad/Bridge.h',OTHER_LDFLAGS=['-lz','-liconv'],CODE_SIGN_STYLE='Automatic',CODE_SIGN_IDENTITY='Apple Development',DEVELOPMENT_TEAM='9K3SQ64X5H')
+pad_settings = dict(ASSETCATALOG_COMPILER_APPICON_NAME='AppIcon',SDKROOT='iphoneos',SUPPORTED_PLATFORMS='iphoneos iphonesimulator',TARGETED_DEVICE_FAMILY='2',IPHONEOS_DEPLOYMENT_TARGET='16.0',PRODUCT_NAME='NWCViewerPad',PRODUCT_BUNDLE_IDENTIFIER='com.quentinlesceller.nwcviewer.ipad',INFOPLIST_FILE='iPad/Info.plist',SWIFT_OBJC_BRIDGING_HEADER='iPad/Bridge.h',OTHER_LDFLAGS=['-lz'],CODE_SIGN_STYLE='Automatic',CODE_SIGN_IDENTITY='Apple Development',DEVELOPMENT_TEAM='9K3SQ64X5H')
 add('pad','PBXNativeTarget',name='NWCViewerPad',productName='NWCViewerPad',productReference=pad_product,productType='com.apple.product-type.application',buildConfigurationList=configs('pad',pad_settings),buildPhases=[pad_sources_phase,pad_resources],buildRules=[],dependencies=[])
 add('project','PBXProject',attributes={'LastUpgradeCheck':'1600'},buildConfigurationList=configs('project',{}),compatibilityVersion='Xcode 14.0',developmentRegion='en',hasScannedForEncodings=0,knownRegions=languages+['Base'],mainGroup=main,productRefGroup=products,projectDirPath='',projectRoot='',packageReferences=[sparkle_package],targets=[ref('pad'),ref('app'),ref('helper'),ref('tests')])
 

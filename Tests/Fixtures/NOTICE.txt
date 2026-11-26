@@ -1,0 +1,4 @@
+Flee.nwc, St._Stephen.nwc and syllables.nwc come from the nwc2xml sample
+collection (https://github.com/n9yty/nwc2xml), distributed with GNU GPL v2.
+Uncompressed.nwc is the uncompressed form of St._Stephen.nwc.
+See COPYING.txt. These samples are used by the tests.

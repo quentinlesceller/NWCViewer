@@ -23,8 +23,8 @@ xcodebuild -project NWCViewer.xcodeproj -scheme NWCViewer -configuration Release
 APP="$ARCHIVE/Products/Applications/NWC Viewer.app"
 lipo "$APP/Contents/MacOS/NWC Viewer" -verify_arch arm64
 lipo "$APP/Contents/MacOS/NWC Viewer" -verify_arch x86_64
-lipo "$APP/Contents/Helpers/nwc2xml" -verify_arch arm64
-lipo "$APP/Contents/Helpers/nwc2xml" -verify_arch x86_64
+lipo "$APP/Contents/Helpers/score-reader" -verify_arch arm64
+lipo "$APP/Contents/Helpers/score-reader" -verify_arch x86_64
 # iCloud Drive may attach Finder metadata after Xcode archives the bundle.
 # Remove only metadata disallowed by codesign; preserve other attributes.
 xattr -dr com.apple.FinderInfo "$APP" 2>/dev/null || true

@@ -1,1 +1,1 @@
-int NWCPadConvert(const char *path);
+#include "../Converter/ScoreReader.h"

@@ -17,7 +17,7 @@ python3 - "$ROOT" "$RELEASE_DIR" <<'PY'
 from pathlib import Path
 import sys, zipfile
 root, output = map(Path, sys.argv[1:])
-allowed = ['Converter', 'App', 'Resources', 'Vendor', 'Tests', 'Tools', 'Updates', '.github',
+allowed = ['iPad', 'Converter', 'App', 'Resources', 'Vendor', 'Tests', 'Tools', 'Updates', '.github',
            'NWCViewer.xcodeproj', 'README.md', 'RELEASE.md', 'LICENSE', '.gitignore']
 with zipfile.ZipFile(output/'NWCViewer-Source.zip', 'w', zipfile.ZIP_DEFLATED) as archive:
     for name in allowed:
@@ -26,7 +26,7 @@ with zipfile.ZipFile(output/'NWCViewer-Source.zip', 'w', zipfile.ZIP_DEFLATED) a
             if not file.is_file() or file.is_symlink(): continue
             if any(part in ('__pycache__', 'xcuserdata') for part in file.relative_to(root).parts): continue
             if file.suffix in ('.o', '.xcuserstate'): continue
-            if file == root/'Vendor/nwc2xml/nwc2xml': continue
+            if file == root/'Converter/score-reader': continue
             archive.write(file, Path('NWCViewer')/file.relative_to(root))
 PY
 cat > "$RELEASE_DIR/Read Me.txt" <<'TEXT'

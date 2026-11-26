@@ -147,7 +147,7 @@ final class ViewerModel: ObservableObject {
         busy = true; ready = false; hasScore = false; xml = nil; pageCount = 0
         title = url.deletingPathExtension().lastPathComponent
         let access = url.startAccessingSecurityScopedResource()
-        let helper = Bundle.main.bundleURL.appendingPathComponent("Contents/Helpers/nwc2xml")
+        let helper = Bundle.main.bundleURL.appendingPathComponent("Contents/Helpers/score-reader")
         Task {
             defer { if access { url.stopAccessingSecurityScopedResource() } }
             do {

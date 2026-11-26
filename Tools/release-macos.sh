@@ -32,7 +32,7 @@ SIGNING_DIR="$(mktemp -d "${TMPDIR:-/tmp}/NWCViewer-signing.XXXXXX")"
 trap 'rm -rf "$SIGNING_DIR"' EXIT
 APP="$SIGNING_DIR/NWC Viewer.app"
 ditto 'build/ReleaseDerivedData/Build/Products/Release/NWC Viewer.app' "$APP"
-HELPER="$APP/Contents/Helpers/nwc2xml"
+HELPER="$APP/Contents/Helpers/score-reader"
 lipo "$APP/Contents/MacOS/NWC Viewer" -verify_arch arm64
 lipo "$APP/Contents/MacOS/NWC Viewer" -verify_arch x86_64
 lipo "$HELPER" -verify_arch arm64

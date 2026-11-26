@@ -4,7 +4,7 @@ build/
 *.xcuserstate
 xcuserdata/
 *.o
-Vendor/nwc2xml/nwc2xml
+Converter/score-reader
 __pycache__/
 .venv/
 *.xcresult

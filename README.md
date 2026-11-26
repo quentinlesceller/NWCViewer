@@ -67,7 +67,7 @@ Requirements: **macOS 13 or later**, **Xcode 15 or later** with its macOS SDK. X
 2. Select scheme **NWCViewer**, destination **My Mac**.
 3. Press Command–R.
 
-The C++ `nwc2xml` target builds first and is copied into `NWC Viewer.app/Contents/Helpers/nwc2xml`. Web assets and license notices are copied into the app's Resources. Local builds use ad-hoc signing (`-`), so no Apple developer team is required.
+The C++ `score-reader` target builds first and is copied into `NWC Viewer.app/Contents/Helpers/score-reader`. Web assets and license notices are copied into the app's Resources. Local builds use ad-hoc signing (`-`), so no Apple developer team is required.
 
 Equivalent terminal commands, from this directory:
 
@@ -84,26 +84,13 @@ The checked-in Xcode project is deterministic and has a shared scheme. To regene
 python3 Tools/generate_project.py
 ```
 
-For a universal release add `ARCHS='arm64 x86_64' ONLY_ACTIVE_ARCH=NO` to the build command. Distribution to other Macs requires your own Developer ID signing, hardened-runtime configuration and notarization, including signing the helper. The default local build is **not notarized** or configured for the Mac App Store. The app deliberately does not enable App Sandbox: the bundled legacy command-line parser is a child process. Score conversion and display work offline. The optional updater connects to GitHub over HTTPS.
+For a universal release add `ARCHS='arm64 x86_64' ONLY_ACTIVE_ARCH=NO` to the build command. Distribution to other Macs requires your own Developer ID signing, hardened-runtime configuration and notarization, including signing the helper. The default local build is **not notarized** or configured for the Mac App Store. The app deliberately does not enable App Sandbox: the bundled command-line parser is a child process. Score conversion and display work offline. The optional updater connects to GitHub over HTTPS.
 
 ## Conversion: what is actually supported
 
-The converter is [n9yty/nwc2xml](https://github.com/n9yty/nwc2xml/tree/47235bd77a5cd1376426f224a0cda51409b654e0/newversion), the wxWidgets-free C++ port of James Lee's **nwc2xml v1.5**. Its sources are included under `Vendor/nwc2xml`, pinned to commit **47235bd77a5cd1376426f224a0cda51409b654e0**. It parses binary NWC data and inflates `[NWZ]\0` compressed files using zlib, then writes MusicXML 1.1. It supports the legacy NWC versions recognized by upstream, **1.30 through 2.1**. That is a compatibility range, not a guarantee of fidelity for every score or every intermediate version.
+Mac and iPad share the C++ score reader in `Converter/`. It reads compressed and uncompressed NWC scores and writes MusicXML locally. Binary layouts recognized are 1.30, 1.50, 1.55, 1.70, 1.75, 2.0, 2.01 and 2.75. Legacy regression scores cover 1.75. Other versions and uncommon notation have less test coverage. Unsupported musical records produce an error. Renaming a text export to .nwc does not change its format.
 
-**Renaming `.nwc` to `.nwct`, `.nwctxt`, or `.xml` does not convert anything.** This app never does that. It copies the original bytes to an isolated temporary `score.nwc` and invokes the parser with a separate argument array. Text exports renamed to `.nwc` are rejected. Some other converters named `nwc2musicxml` primarily accept NWCTXT; they are not substitutes for this binary parser.
-
-NWC 2.75 binary containers with embedded score text are also supported by the local C++ converter in `Converter/ModernNWC.cpp`. It handles notes, chords, rests, multi-measure rests, standard clefs and keys, time changes, accidentals, ties, slurs, triplets, lyrics and dynamics. Split-duration chords and other unimplemented musical records are rejected rather than silently omitted. Staff layout is regenerated and may differ substantially from the original. Other newer versions and unusual notation may be unsupported. The app rejects failed, malformed, or empty conversions with a readable message. If a newer file fails, use NoteWorthy Composer to export MusicXML, or save a compatible older binary version if your edition supports it; this viewer does not open MusicXML directly. Engraving, layout, lyrics, repeats and other details may differ from the original; check the score before performance or publication. Legacy byte encodings use upstream's UTF-8 / CP1252 fallback. There is no charset setting in this minimal interface.
-
-Input is limited to 16 MB; decompressed binary data and converted XML are limited to 32 MB. Conversion runs off the UI thread with a 20-second timeout. The helper is killed on timeout. Input is copied before conversion; outputs and helper temporary files stay in a private temporary directory and are removed on success/failure. An app crash or forced termination can leave temporary files for macOS to clean up. The original score and neighboring files are never intentionally changed. This is a legacy parser, not a hardened parser for hostile files.
-
-Local modifications to upstream (all included in source):
-
-- Add `<cstddef>` for portable `offsetof` compilation.
-- Propagate parser failures through the command-line exit status.
-- Zero-initialize the header buffer for short-input checks.
-- Limit decompression to 32 MB.
-
-`Vendor/SHA256SUMS` records the vendored source and browser bundle hashes. Source and dependency versions are fixed; build outputs are not claimed to be byte-identical across SDK/compiler versions.
+Input is limited to 16 MB. Expanded files and generated XML are limited to 32 MB. The Mac runs conversion in a separate helper with a 20-second timeout.
 
 ## Runtime dependencies and licenses
 
@@ -112,15 +99,14 @@ Everything below is bundled or part of macOS. End users install **no additional 
 | Component | Version / source | Runtime dependency | License |
 | --- | --- | --- | --- |
 | NWC Viewer app and project | This repository | SwiftUI, AppKit, Foundation, WebKit (macOS 13+) | GPL-2.0-only; see `LICENSE` |
-| nwc2xml | v1.5, pinned port commit above | C++ standard library, system zlib and iconv | GPL v2, `Vendor/nwc2xml/LICENSE.TXT` |
 | OpenSheetMusicDisplay | 1.9.2, npm prebuilt UMD bundle | WKWebView JavaScript and SVG | BSD-3-Clause, `Resources/Licenses/OpenSheetMusicDisplay-BSD-3-Clause.txt` |
 | OSMD bundled libraries | VexFlow, JSZip, loglevel, typescript-collections and supporting libraries | Included in the UMD bundle | MIT/BSD-compatible notices; JSZip used under its MIT option; see `Resources/Licenses/OSMD-DEPENDENCY-NOTICES.txt` |
 | Sparkle | 2.10.1, pinned Swift package | Bundled updater framework and helpers | MIT, `Resources/Licenses/Sparkle-LICENSE.txt` |
-| zlib / iconv | macOS system versions | Supplied by macOS; not redistributed here | zlib / Apple's system libiconv distribution terms |
+| zlib | System version | Supplied by the operating system | zlib |
 
 The OSMD bundle was obtained from `https://registry.npmjs.org/opensheetmusicdisplay/-/opensheetmusicdisplay-1.9.2.tgz`. Its upstream npm tarball omits the separate minifier license file named in its header, so this project supplies collected dependency license texts under that filename, plus OSMD's license and author list. `Tools/notice-packages.lock.json` records the packages used to collect those notices; it is **not** a lockfile claiming the precise internal dependency graph used for OSMD's upstream prebuilt bundle.
 
-Preserve all included notices when redistributing. The GPL converter's full corresponding source, its changes, and build instructions are included. When distributing app/helper binaries, supply this corresponding source alongside them under GPL v2; a link to upstream alone is insufficient. Third-party files retain their own notices/licenses. The included test scores come from the converter's GPL repository (`sample/`); `Uncompressed.nwc` is the decompressed `St._Stephen.nwc` fixture. `Modern275.nwc` is a synthetic regression score created for this project, with no user music included. Keep these notices with source distributions.
+Preserve all included notices when redistributing. The included test scores come from [the historical nwc2xml sample collection](https://github.com/n9yty/nwc2xml); `Uncompressed.nwc` is the decompressed `St._Stephen.nwc` fixture. `Modern275.nwc` is a synthetic regression score created for this project, with no user music included. Keep these notices with source distributions.
 
 ## Tests
 
@@ -132,10 +118,10 @@ Tools/test-macos.sh
 
 Tests cover NWC 2.75 timing changes, multi-measure rests, cautionary accidentals, ties and triplets, compressed and uncompressed binary fixtures, preserving original bytes, filenames with Unicode and shell characters, renamed text rejection, truncated compressed data, unsupported versions, a missing helper, invalid MusicXML, timeout termination, local WebKit rendering and zoom. `Tools/ci/macos.yml` is an optional GitHub Actions workflow template. Copy it to `.github/workflows/macos.yml` using an account with workflow permission to enable CI.
 
-The standalone converter tests also run on Linux with a C++11 compiler, `make`, Python 3, and zlib development headers (iconv is part of glibc). On macOS, zlib/iconv and the compiler come with Xcode:
+The standalone converter tests also run on Linux with a C++11 compiler, `make`, Python 3, and zlib development headers. On macOS, zlib and the compiler come with Xcode:
 
 ```sh
-make -C Vendor/nwc2xml
+make -C Converter
 python3 Tools/test_converter.py
 ```
 
@@ -176,7 +162,7 @@ The browser suite converts all fixtures, renders with network requests monitored
 - `App/`: SwiftUI interface, conversion service, WebKit bridge, print/PDF handling.
 - `Resources/Web/`: local OSMD bundle, fixed A4 SVG rendering, scrolling/zoom and print CSS.
 - `Resources/Licenses/`: notices copied into the app.
-- `Vendor/nwc2xml/`: complete converter source, system-only build dependencies.
+- `Converter/`: shared score reader source, system-only build dependencies.
 - `Tests/`: hosted XCTest suite and binary fixtures.
 - `Tools/`: deterministic project generator and portable regression tests.
 

@@ -65,7 +65,7 @@ struct Converter {
         let deadline = Date().addingTimeInterval(timeout)
         while process.isRunning && Date() < deadline { Thread.sleep(forTimeInterval: 0.05) }
         if process.isRunning {
-            // The legacy parser may hang on malformed input. SIGKILL ensures cleanup.
+            // Enforce the conversion deadline before removing the temporary directory.
             kill(process.processIdentifier, SIGKILL)
             process.waitUntilExit()
             throw ViewerError.message("This file took too long to convert. It may be damaged or unsupported.")

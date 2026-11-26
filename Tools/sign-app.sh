@@ -10,7 +10,7 @@ for code in \
   "$SPARKLE/Versions/B/Autoupdate" \
   "$SPARKLE/Versions/B/Updater.app" \
   "$SPARKLE" \
-  "$APP/Contents/Helpers/nwc2xml" \
+  "$APP/Contents/Helpers/score-reader" \
   "$APP"; do
   codesign --force --options runtime --timestamp --preserve-metadata=entitlements --sign "$SIGN_IDENTITY" "$code"
 done

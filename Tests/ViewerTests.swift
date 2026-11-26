@@ -4,7 +4,7 @@ import PDFKit
 @testable import NWCViewer
 
 final class ViewerTests: XCTestCase {
-    var helper: URL { Bundle.main.bundleURL.appendingPathComponent("Contents/Helpers/nwc2xml") }
+    var helper: URL { Bundle.main.bundleURL.appendingPathComponent("Contents/Helpers/score-reader") }
     func fixture(_ name: String) throws -> URL {
         try XCTUnwrap(Bundle(for: Self.self).url(forResource: name, withExtension: "nwc", subdirectory: "Fixtures"))
     }
@@ -85,7 +85,7 @@ final class ViewerTests: XCTestCase {
         XCTAssertThrowsError(try Converter(executable: helper).convert(file))
     }
     func testMissingHelperHasUsefulError() throws {
-        XCTAssertThrowsError(try Converter(executable: URL(fileURLWithPath: "/missing/nwc2xml")).convert(fixture("Flee"))) { error in
+        XCTAssertThrowsError(try Converter(executable: URL(fileURLWithPath: "/missing/score-reader")).convert(fixture("Flee"))) { error in
             XCTAssertEqual(error.localizedDescription, NSLocalizedString("The converter is missing. Reinstall NWC Viewer or rebuild it using the setup instructions.", comment: ""))
         }
     }

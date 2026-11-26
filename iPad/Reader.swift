@@ -149,10 +149,10 @@ final class Book: NSObject, ObservableObject, WKNavigationDelegate {
                             try FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true)
                             defer { try? FileManager.default.removeItem(at: dir) }
                             guard let size = try url.resourceValues(forKeys: [.fileSizeKey]).fileSize, size <= 16 << 20 else { throw CocoaError(.fileReadTooLarge) }
-                            let input = dir.appendingPathComponent("score.nwc")
-                            try FileManager.default.copyItem(at: url, to: input)
-                            guard NWCPadConvert(input.path) == 0 else { throw CocoaError(.fileReadCorruptFile) }
-                            reply.resume(returning: try String(contentsOf: dir.appendingPathComponent("score.xml"), encoding: .utf8))
+                            let output = dir.appendingPathComponent("score.xml")
+                            let status = ConvertNWCScore(url.path, output.path)
+                            if status != 0 { throw ViewerError.message("This file could not be opened. It may be damaged or use an unsupported NWC version. Supported versions: 1.30–2.1 / 2.75.") }
+                            reply.resume(returning: try String(contentsOf: output, encoding: .utf8))
                         } catch { reply.resume(throwing: error) }
                     }
                 }
