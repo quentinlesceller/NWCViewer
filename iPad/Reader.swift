@@ -255,6 +255,7 @@ struct CanvasView: UIViewRepresentable {
 struct Reader: View {
     @StateObject private var book = Book()
     @Environment(\.scenePhase) var phase
+    @Environment(\.horizontalSizeClass) private var widthClass
     @State private var choosing = false
     var body: some View {
         NavigationStack {
@@ -288,7 +289,13 @@ struct Reader: View {
                             Divider()
                             Button { book.preparePDF(.export) } label: { Label("Save PDF…", systemImage: "square.and.arrow.down") }
                             Button { book.preparePDF(.printScore) } label: { Label("Print…", systemImage: "printer") }
-                        } label: { Text("Score options") }.disabled(book.busy)
+                        } label: {
+                            if widthClass == .compact {
+                                Label("Score options", systemImage: "ellipsis.circle").labelStyle(.iconOnly)
+                            } else {
+                                Text("Score options")
+                            }
+                        }.disabled(book.busy)
                     }
                 }
             }

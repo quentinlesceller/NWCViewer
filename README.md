@@ -1,6 +1,6 @@
 # NWC Viewer
 
-A small native macOS app for opening **binary NoteWorthy Composer `.nwc` files** and reading sheet music. SwiftUI provides the window and controls; a bundled open-source converter produces MusicXML, and a local OpenSheetMusicDisplay (OSMD) installation renders it in WKWebView.
+NWC Viewer is a free NoteWorthy Composer (.nwc) score reader for macOS, iPhone and iPad. Open scores offline, choose voices, print, or save a PDF. [Project website and downloads](https://quentinlesceller.github.io/NWCViewer/).
 
 ## Download for Mac
 
