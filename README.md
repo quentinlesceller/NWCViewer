@@ -4,7 +4,7 @@ A small native macOS app for opening **binary NoteWorthy Composer `.nwc` files**
 
 ## Download for Mac
 
-[Download NWC Viewer](https://github.com/quentinlesceller/NWCViewer/releases/download/v1.7/NWCViewer-1.7-macOS.zip)
+[Download NWC Viewer](https://github.com/quentinlesceller/NWCViewer/releases/download/v1.8/NWCViewer-1.8-macOS.zip)
 
 Requires macOS 13 or later; supports Intel and Apple silicon. Unzip the download,
 drag **NWC Viewer.app** into Applications, then open it. The release is Developer
