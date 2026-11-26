@@ -44,6 +44,7 @@ def configs(name, extras):
     for mode in ['Debug','Release']:
         settings = dict(base, **extras)
         settings.update(SWIFT_OPTIMIZATION_LEVEL='-Onone' if mode=='Debug' else '-O', GCC_OPTIMIZATION_LEVEL='0' if mode=='Debug' else 's', DEBUG_INFORMATION_FORMAT='dwarf' if mode=='Debug' else 'dwarf-with-dsym', ENABLE_TESTABILITY='YES' if mode=='Debug' else 'NO')
+        if name == 'pad' and mode == 'Debug': settings['SWIFT_ACTIVE_COMPILATION_CONDITIONS'] = 'DEBUG'
         refs.append(add(name+mode,'XCBuildConfiguration', name=mode, buildSettings=settings))
     return add(name+'configs','XCConfigurationList', buildConfigurations=refs, defaultConfigurationIsVisible=0, defaultConfigurationName='Release')
 
@@ -62,7 +63,16 @@ app_phases=[phase('appSources','PBXSourcesBuildPhase',[build('swift'+str(i),f) f
 add('app','PBXNativeTarget', name='NWCViewer', productName='NWC Viewer', productReference=app_product, productType='com.apple.product-type.application', buildConfigurationList=configs('app',dict(PRODUCT_NAME='NWC Viewer',PRODUCT_MODULE_NAME='NWCViewer',PRODUCT_BUNDLE_IDENTIFIER='com.quentinlesceller.nwcviewer',INFOPLIST_FILE='Resources/Info.plist',ENABLE_APP_SANDBOX='NO',LD_RUNPATH_SEARCH_PATHS=['$(inherited)','@executable_path/../Frameworks'])), packageProductDependencies=[sparkle_product], buildPhases=app_phases, buildRules=[], dependencies=[dependency('apphelper','helper')])
 test_phases=[phase('testSources','PBXSourcesBuildPhase',[build('test',test)]),phase('testResources','PBXResourcesBuildPhase',[build('fixtures',fixtures)]),phase('testFrameworks','PBXFrameworksBuildPhase',[])]
 add('tests','PBXNativeTarget',name='NWCViewerTests',productName='NWCViewerTests',productReference=test_product,productType='com.apple.product-type.bundle.unit-test',buildConfigurationList=configs('tests',dict(PRODUCT_NAME='NWCViewerTests',PRODUCT_BUNDLE_IDENTIFIER='org.example.NWCViewerTests',GENERATE_INFOPLIST_FILE='YES',TEST_HOST='$(BUILT_PRODUCTS_DIR)/NWC Viewer.app/Contents/MacOS/NWC Viewer',BUNDLE_LOADER='$(TEST_HOST)',LD_RUNPATH_SEARCH_PATHS=['$(inherited)','@executable_path/../Frameworks','@loader_path/../Frameworks'])),buildPhases=test_phases,buildRules=[],dependencies=[dependency('testsapp','app')])
-add('project','PBXProject',attributes={'LastUpgradeCheck':'1600'},buildConfigurationList=configs('project',{}),compatibilityVersion='Xcode 14.0',developmentRegion='en',hasScannedForEncodings=0,knownRegions=languages+['Base'],mainGroup=main,productRefGroup=products,projectDirPath='',projectRoot='',packageReferences=[sparkle_package],targets=[ref('app'),ref('helper'),ref('tests')])
+pad_product = add('padProduct','PBXFileReference',explicitFileType='wrapper.application',path='NWCViewerPad.app',sourceTree='BUILT_PRODUCTS_DIR')
+pad_sources = [file('iPad/Reader.swift','sourcecode.swift'), file('iPad/Bridge.cpp','sourcecode.cpp.cpp')]
+objects[products]['children'].append(pad_product)
+objects[main]['children'].extend(pad_sources)
+pad_sources_phase = phase('padSources','PBXSourcesBuildPhase',[build('padSource'+str(i),f) for i,f in enumerate(pad_sources+cpp+[ref('App/ScorePDF.swift')])])
+objects[ref('build:padSource2')]['settings'] = {'COMPILER_FLAGS':'-Dmain=nwc_cli_main'}
+pad_resources = phase('padResources','PBXResourcesBuildPhase',[build('padResource'+str(i),f) for i,f in enumerate([web,licenses,file('iPad/Assets.xcassets','folder.assetcatalog')]+localized)])
+pad_settings = dict(ASSETCATALOG_COMPILER_APPICON_NAME='AppIcon',SDKROOT='iphoneos',SUPPORTED_PLATFORMS='iphoneos iphonesimulator',TARGETED_DEVICE_FAMILY='2',IPHONEOS_DEPLOYMENT_TARGET='16.0',PRODUCT_NAME='NWCViewerPad',PRODUCT_BUNDLE_IDENTIFIER='com.quentinlesceller.nwcviewer.ipad',INFOPLIST_FILE='iPad/Info.plist',SWIFT_OBJC_BRIDGING_HEADER='iPad/Bridge.h',OTHER_LDFLAGS=['-lz','-liconv'],CODE_SIGN_STYLE='Automatic',CODE_SIGN_IDENTITY='Apple Development',DEVELOPMENT_TEAM='9K3SQ64X5H')
+add('pad','PBXNativeTarget',name='NWCViewerPad',productName='NWCViewerPad',productReference=pad_product,productType='com.apple.product-type.application',buildConfigurationList=configs('pad',pad_settings),buildPhases=[pad_sources_phase,pad_resources],buildRules=[],dependencies=[])
+add('project','PBXProject',attributes={'LastUpgradeCheck':'1600'},buildConfigurationList=configs('project',{}),compatibilityVersion='Xcode 14.0',developmentRegion='en',hasScannedForEncodings=0,knownRegions=languages+['Base'],mainGroup=main,productRefGroup=products,projectDirPath='',projectRoot='',packageReferences=[sparkle_package],targets=[ref('pad'),ref('app'),ref('helper'),ref('tests')])
 
 def serialize(value):
     if isinstance(value,dict): return '{ '+ ' '.join(f'{quote(k)} = {serialize(v)};' for k,v in value.items())+' }'

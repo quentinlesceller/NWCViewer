@@ -85,3 +85,9 @@
 "Note Size" = "Taille des notes";
 "Changes apply to the score, printing, and PDF. Paper size: A4." = "Ces réglages s’appliquent à la partition, à l’impression et au PDF. Format du papier : A4.";
 "Changing note size switches measures per line to Automatic." = "Modifier la taille des notes passe le nombre de mesures par ligne en mode Automatique.";
+
+"Score options" = "Options de la partition";
+"Soprano" = "Soprano";
+"Alto" = "Alto";
+"Tenor" = "Ténor";
+"Bass" = "Basse";

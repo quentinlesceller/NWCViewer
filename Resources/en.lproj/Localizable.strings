@@ -85,3 +85,9 @@
 "Note Size" = "Note Size";
 "Changes apply to the score, printing, and PDF. Paper size: A4." = "Changes apply to the score, printing, and PDF. Paper size: A4.";
 "Changing note size switches measures per line to Automatic." = "Changing note size switches measures per line to Automatic.";
+
+"Score options" = "Score options";
+"Soprano" = "Soprano";
+"Alto" = "Alto";
+"Tenor" = "Tenor";
+"Bass" = "Bass";

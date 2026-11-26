@@ -85,3 +85,9 @@
 "Note Size" = "Dimensione delle note";
 "Changes apply to the score, printing, and PDF. Paper size: A4." = "Le modifiche si applicano allo spartito, alla stampa e al PDF. Formato carta: A4.";
 "Changing note size switches measures per line to Automatic." = "Modificando la dimensione delle note, il numero di battute per riga passa ad Automatico.";
+
+"Score options" = "Opzioni spartito";
+"Soprano" = "Soprano";
+"Alto" = "Contralto";
+"Tenor" = "Tenore";
+"Bass" = "Basso";
