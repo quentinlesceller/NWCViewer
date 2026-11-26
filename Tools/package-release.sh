@@ -37,10 +37,7 @@ Click Open NWC File to choose a score. Use Print or Save PDF as needed. Use Fit 
 Updates download automatically and install when you quit. Preferences are in NWC Viewer → Settings.
 The interface follows your Mac’s language: English, French, Spanish, German, or Italian.
 
-Français : décompressez ce téléchargement, puis glissez NWC Viewer dans Applications.
-Cliquez sur « Ouvrir un fichier NWC… », puis sur « Imprimer… » ou « Enregistrer en PDF… ».
-Les mises à jour sont automatiques à partir de cette version. Réglages : NWC Viewer → Réglages.
-Pour changer la langue : Réglages Système → Général → Langue et région → Applications.
+To change the app language, open System Settings → General → Language & Region → Applications.
 
 Supports binary NWC versions 1.30–2.1 and 2.75. Some notation is unsupported; layout may differ.
 

@@ -1,5 +1,7 @@
-# Confidentialité de NWC Viewer pour iPhone et iPad
+# NWC Viewer privacy policy for iPhone and iPad
 
-NWC Viewer ouvre les partitions que vous choisissez dans Fichiers. La conversion, l’affichage et la création des PDF ont lieu sur votre iPhone ou iPad. L’app conserve une copie locale de la dernière partition et des réglages de lecture pour vous permettre de reprendre votre lecture. Elle ne demande aucun compte et ne transmet aucune donnée au développeur. Elle ne contient ni publicité ni outil de suivi.
+NWC Viewer opens the scores you choose in Files. Your iPhone or iPad converts and displays each score and creates any PDFs you export. The app keeps a local copy of your last score and your reading settings so you can pick up where you left off.
 
-Lorsque vous enregistrez un PDF ou imprimez une partition, vous choisissez vous-même la destination dans la fenêtre d’iPadOS. Pour poser une question sur l’app, utilisez la [page d’assistance](https://github.com/quentinlesceller/NWCViewer/issues). Les messages publiés sur cette page sont publics.
+You can use the app without an account. It sends no data to the developer and contains no ads or tracking tools.
+
+When you save a PDF or print a score, you choose the destination in the system dialog. If you have a question about the app, you can post it on the [GitHub support page](https://github.com/quentinlesceller/NWCViewer/issues). Posts there are public.
